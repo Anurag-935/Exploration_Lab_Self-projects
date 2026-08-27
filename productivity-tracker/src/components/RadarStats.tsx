@@ -1,29 +1,85 @@
+import { useMemo } from "react"
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts"
-import { Skill } from "../types"
+import { Skill, Task } from "../types"
 
-export default function RadarStats({ skills }: { skills: Skill[] }) {
-  const data = skills.length > 0 ? skills : [
-    { name: "Focus", level: 1 },
-    { name: "Tech", level: 1 },
-    { name: "Life", level: 1 }
-  ]
+const AXES = ["Technical", "Communication", "Creativity", "Discipline", "Learning", "Wellness"]
+
+type TaskWithSkills = Task & {
+  task_skills?: { skills: { name: string } }[]
+}
+
+type Props = {
+  tasks: TaskWithSkills[]
+}
+
+export default function RadarStats({ tasks }: Props) {
+  
+  // Calculate XP per axis based on completed tasks
+  const stats = useMemo(() => {
+    const xpMap: Record<string, number> = {}
+    AXES.forEach(a => xpMap[a] = 0)
+
+    tasks.forEach(t => {
+      if (t.status === "done" && t.task_skills) {
+        const tExp = t.exp_value || 10
+        t.task_skills.forEach(ts => {
+          if (ts.skills?.name && xpMap[ts.skills.name] !== undefined) {
+            xpMap[ts.skills.name] += tExp
+          }
+        })
+      }
+    })
+
+    let maxVal = 10
+    const data = AXES.map(name => {
+      const xp = xpMap[name]
+      if (xp > maxVal) maxVal = xp
+      
+      // Calculate level (e.g. 100 XP per level)
+      const level = Math.floor(xp / 100) + 1
+      const progress = xp % 100
+
+      return {
+        name,
+        xp,
+        level,
+        progress
+      }
+    })
+
+    return { data, maxVal: Math.max(maxVal, 50) } // Ensure domain is at least 0-50
+  }, [tasks])
 
   return (
-    <div className="bg-brand-dark p-6 rounded-xl shadow-lg border border-brand-900/30">
-      <h3 className="font-semibold text-brand-light mb-4 text-center tracking-wide uppercase text-sm">Skill Levels</h3>
-      <div className="h-64 w-full">
+    <div className="bg-brand-dark p-6 rounded-xl shadow-lg border border-brand-900/30 flex flex-col h-full">
+      <h3 className="font-semibold text-brand-light mb-2 text-center tracking-wide uppercase text-sm">Skill Radar</h3>
+      
+      <div className="h-64 w-full mb-6">
         <ResponsiveContainer width="100%" height="100%">
-          <RadarChart cx="50%" cy="50%" outerRadius="70%" data={data}>
+          <RadarChart cx="50%" cy="50%" outerRadius="65%" data={stats.data}>
             <PolarGrid stroke="#5A1420" />
-            <PolarAngleAxis dataKey="name" tick={{ fill: '#EFE7DE', fontSize: 11 }} />
-            <PolarRadiusAxis angle={30} domain={[0, 'dataMax + 1']} tick={false} axisLine={false} />
-            <Radar name="Level" dataKey="level" stroke="#B14858" fill="#892535" fillOpacity={0.6} />
+            <PolarAngleAxis dataKey="name" tick={{ fill: '#EFE7DE', fontSize: 10, fontWeight: 600 }} />
+            {/* Setting a static domain ensures the hexagon never distorts, even if some values are 0 */}
+            <PolarRadiusAxis angle={30} domain={[0, stats.maxVal]} tick={false} axisLine={false} />
+            <Radar name="Level" dataKey="xp" stroke="#B14858" fill="#892535" fillOpacity={0.6} />
           </RadarChart>
         </ResponsiveContainer>
       </div>
-      {skills.length === 0 && (
-        <p className="text-center text-xs text-brand-light/50 mt-2">Complete tasks to level up skills!</p>
-      )}
+
+      <div className="grid grid-cols-2 gap-4 flex-1">
+        {stats.data.map(stat => (
+          <div key={stat.name} className="bg-brand-darker p-3 rounded-lg border border-brand-900/50">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-bold text-brand-light uppercase">{stat.name}</span>
+              <span className="text-xs font-bold text-brand-500">Lv.{stat.level}</span>
+            </div>
+            <div className="w-full h-1.5 bg-black/50 rounded-full overflow-hidden">
+              <div className="h-full bg-brand-500 rounded-full" style={{ width: `${stat.progress}%` }}></div>
+            </div>
+            <div className="text-[10px] text-brand-light/50 text-right mt-1">{stat.xp} Total XP</div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

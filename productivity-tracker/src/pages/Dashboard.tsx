@@ -6,7 +6,6 @@ import BacklogWidget from "../components/BacklogWidget"
 import TimeSpentWidget from "../components/TimeSpentWidget"
 import DatePendingWidget from "../components/DatePendingWidget"
 import QuickCapture from "../components/QuickCapture"
-import ConsistencyGraph from "../components/ConsistencyGraph"
 import MainTaskTable from "../components/MainTaskTable"
 import RadarStats from "../components/RadarStats"
 import Timer from "../components/Timer"
@@ -75,7 +74,7 @@ export default function Dashboard() {
 
         {/* Right Col: Radar Chart (~35%) */}
         <div className="w-full lg:w-[35%] space-y-6">
-          <RadarStats skills={skills} />
+          <RadarStats tasks={tasks as any} />
           {/* Calendar heatmap was mentioned not to be touched, so I will leave ConsistencyGraph here if it was here.
               Wait, in my previous edit, ConsistencyGraph was above the Main Content grid. I will keep it there. */}
         </div>
@@ -83,4 +82,6 @@ export default function Dashboard() {
     </div>
   )
 }
+
+
 
