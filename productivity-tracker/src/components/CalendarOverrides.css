@@ -1,0 +1,95 @@
+.custom-calendar-wrapper .react-calendar {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  color: #EFE7DE;
+}
+
+.custom-calendar-wrapper .react-calendar__navigation {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.custom-calendar-wrapper .react-calendar__navigation button {
+  min-width: 44px;
+  background: none;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #EFE7DE;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.custom-calendar-wrapper .react-calendar__navigation button:disabled {
+  background-color: transparent;
+  color: #3B3B3D;
+}
+
+.custom-calendar-wrapper .react-calendar__navigation button:hover:enabled {
+  background-color: #2A2A2B;
+}
+
+.custom-calendar-wrapper .react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 0.75rem;
+  color: #B14858;
+  margin-bottom: 0.5rem;
+  text-decoration: none;
+}
+
+.custom-calendar-wrapper .react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+}
+
+.custom-calendar-wrapper .react-calendar__month-view__days__day--weekend {
+  color: #892535;
+}
+
+.custom-calendar-wrapper .react-calendar__month-view__days__day--neighboringMonth {
+  color: #3B3B3D;
+}
+
+.custom-calendar-wrapper .react-calendar__tile {
+  max-width: 100%;
+  padding: 0.75em 0.5em;
+  background: none;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  color: #EFE7DE;
+}
+
+.custom-calendar-wrapper .react-calendar__tile:disabled {
+  background-color: transparent;
+  color: #3B3B3D;
+}
+
+.custom-calendar-wrapper .react-calendar__tile:hover {
+  background-color: #2A2A2B;
+}
+
+.custom-calendar-wrapper .react-calendar__tile--now {
+  background: #2A2A2B;
+  color: #B14858;
+  font-weight: bold;
+}
+
+.custom-calendar-wrapper .react-calendar__tile--now:hover {
+  background: #3B3B3D;
+}
+
+.custom-calendar-wrapper .react-calendar__tile--active {
+  background: #B14858;
+  color: white;
+}
+
+.custom-calendar-wrapper .react-calendar__tile--active:hover {
+  background: #892535;
+}

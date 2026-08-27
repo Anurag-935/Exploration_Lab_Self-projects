@@ -1,51 +1,64 @@
-import CalendarHeatmap from "react-calendar-heatmap"
-import "react-calendar-heatmap/dist/styles.css"
+import React, { useMemo, useState } from "react"
+import Calendar from "react-calendar"
 import { Task, Habit } from "../types"
-import { useMemo } from "react"
+
+// To apply custom styles without importing the default css, we'll write them in index.css or inline
+import "./CalendarOverrides.css"
 
 type Props = {
   tasks: Task[]
   habits: Habit[]
 }
 
-export default function ConsistencyGraph({ tasks }: Props) {
-  const data = useMemo(() => {
+export default function ConsistencyGraph({ tasks, habits }: Props) {
+  const [date, setDate] = useState(new Date())
+
+  // Map dates to completion counts
+  const taskCounts = useMemo(() => {
     const counts: Record<string, number> = {}
-    
-    // Count completed tasks per date
     tasks.forEach(task => {
       if (task.status === "done" && task.completed_at) {
-        const dateStr = new Date(task.completed_at).toISOString().split("T")[0]
-        counts[dateStr] = (counts[dateStr] || 0) + 1
+        const dStr = new Date(task.completed_at).toISOString().split("T")[0]
+        counts[dStr] = (counts[dStr] || 0) + 1
       }
     })
-
-    return Object.entries(counts).map(([date, count]) => ({ date, count }))
+    return counts
   }, [tasks])
 
-  const today = new Date()
-  const startDate = new Date(today.getFullYear(), today.getMonth() - 3, today.getDate())
+  const tileContent = ({ date, view }: { date: Date, view: string }) => {
+    if (view === "month") {
+      // Because JS dates are tricky with timezones, we build a local ISO-like string
+      const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+      const dStr = localDate.toISOString().split("T")[0]
+      const count = taskCounts[dStr]
+      
+      if (count > 0) {
+        return (
+          <div className="flex justify-center mt-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-brand-500 shadow-[0_0_4px_rgba(177,72,88,0.8)]"></div>
+          </div>
+        )
+      }
+    }
+    return null
+  }
 
   return (
-    <div className="w-full">
-      <h3 className="text-sm font-medium text-brand-light/50 mb-2 uppercase tracking-wide">Consistency</h3>
-      <div className="bg-brand-dark p-4 rounded-xl shadow-sm border border-brand-900/30 overflow-hidden">
-        <CalendarHeatmap
-          startDate={startDate}
-          endDate={today}
-          values={data}
-          classForValue={(value: any) => {
-            if (!value) return "color-empty"
-            return `color-scale-1`
-          }}
-          showWeekdayLabels
+    <div className="bg-brand-dark p-6 rounded-xl shadow-lg border border-brand-900/30">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="font-semibold text-brand-light tracking-wide uppercase text-sm">Consistency Tracker</h3>
+      </div>
+      
+      <div className="w-full flex justify-center custom-calendar-wrapper">
+        <Calendar 
+          onChange={(val) => setDate(val as Date)} 
+          value={date}
+          tileContent={tileContent}
+          prev2Label={null}
+          next2Label={null}
+          className="bg-transparent border-none w-full max-w-3xl"
         />
       </div>
-      <style>{`
-        .react-calendar-heatmap .color-empty { fill: #2A2A2B; }
-        .react-calendar-heatmap .color-scale-1 { fill: #B14858; }
-      `}</style>
     </div>
   )
 }
-
