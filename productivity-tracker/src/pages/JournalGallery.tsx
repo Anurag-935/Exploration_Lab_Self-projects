@@ -117,7 +117,7 @@ export default function JournalGallery() {
     }
   }
 
-  if (loading) return <div className="p-8 text-center text-gray-500">Loading journal...</div>
+  if (loading) return <div className="p-8 text-center text-brand-light/50">Loading journal...</div>
 
   return (
     <div className="space-y-6 pb-12">
@@ -134,7 +134,7 @@ export default function JournalGallery() {
         {!isCreating && (
           <button 
             onClick={() => setIsCreating(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded font-medium hover:bg-blue-700 text-sm shadow-sm"
+            className="px-4 py-2 bg-brand-700 text-white rounded font-medium hover:bg-brand-500 text-sm shadow-sm"
           >
             New Note
           </button>
@@ -142,7 +142,7 @@ export default function JournalGallery() {
       </div>
 
       {isCreating && (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+        <div className="bg-brand-dark p-6 rounded-xl shadow-sm border border-brand-900/30 mb-8">
           <h3 className="font-semibold mb-6 text-lg">Write a new note</h3>
           <form onSubmit={handleCreate} className="space-y-6">
             
@@ -152,14 +152,14 @@ export default function JournalGallery() {
                 <label className="block text-sm font-medium mb-2">Cover Image (Optional)</label>
                 <div 
                   onClick={() => fileInputRef.current?.click()}
-                  className={`w-full h-32 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer overflow-hidden transition-colors ${previewUrl ? 'border-transparent' : 'border-gray-300 hover:border-blue-500 bg-gray-50 hover:bg-blue-50'}`}
+                  className={`w-full h-32 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer overflow-hidden transition-colors ${previewUrl ? 'border-transparent' : 'border-brand-900/40 hover:border-brand-500 bg-brand-darker/50 hover:bg-brand-900/20'}`}
                 >
                   {previewUrl ? (
                     <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="text-center text-sm text-gray-500">
-                      <span className="text-blue-600 font-medium">Click to upload</span>
-                      <p className="text-xs mt-1 text-gray-400">JPG, PNG up to 5MB</p>
+                    <div className="text-center text-sm text-brand-light/50">
+                      <span className="text-brand-500 font-medium">Click to upload</span>
+                      <p className="text-xs mt-1 text-brand-light/40">JPG, PNG up to 5MB</p>
                     </div>
                   )}
                 </div>
@@ -187,7 +187,7 @@ export default function JournalGallery() {
                         key={num}
                         type="button"
                         onClick={() => setRating(num)}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${rating === num ? 'bg-yellow-400 text-yellow-900 border-2 border-yellow-500 shadow-md scale-110' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${rating === num ? 'bg-yellow-400 text-yellow-900 border-2 border-yellow-500 shadow-md scale-110' : 'bg-brand-darker text-brand-light/40 hover:bg-brand-dark'}`}
                       >
                         {num}
                       </button>
@@ -201,7 +201,7 @@ export default function JournalGallery() {
                     type="text" 
                     value={summary}
                     onChange={(e) => setSummary(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
+                    className="w-full px-4 py-2 bg-brand-darker text-brand-light border border-brand-900/50 rounded-lg focus:ring-2 focus:ring-brand-900 focus:border-brand-500 outline-none transition-all"
                     placeholder="What happened today?"
                     required
                   />
@@ -215,7 +215,7 @@ export default function JournalGallery() {
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 placeholder="Write your detailed thoughts here..."
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg h-40 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all resize-none"
+                className="w-full px-4 py-3 bg-brand-darker text-brand-light border border-brand-900/50 rounded-lg h-40 focus:ring-2 focus:ring-brand-900 focus:border-brand-500 outline-none transition-all resize-none"
               />
             </div>
 
@@ -223,14 +223,14 @@ export default function JournalGallery() {
               <button 
                 type="button" 
                 onClick={() => setIsCreating(false)}
-                className="px-5 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors"
+                className="px-5 py-2.5 text-brand-light/70 hover:bg-brand-darker rounded-lg font-medium transition-colors"
               >
                 Cancel
               </button>
               <button 
                 type="submit" 
                 disabled={uploading || !summary}
-                className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
+                className="px-6 py-2.5 bg-brand-700 text-white rounded-lg font-medium hover:bg-brand-500 disabled:opacity-50 transition-colors shadow-sm"
               >
                 {uploading ? "Saving..." : "Save Note"}
               </button>
@@ -240,11 +240,11 @@ export default function JournalGallery() {
       )}
 
       {entries.length === 0 && !isCreating ? (
-        <div className="text-center p-16 bg-white rounded-2xl border-2 border-gray-100 border-dashed">
-          <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">??</div>
-          <p className="text-gray-900 font-medium mb-1">No notes yet</p>
-          <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">Click "New Note" to write your first reflection. It will appear here as a card.</p>
-          <button onClick={() => setIsCreating(true)} className="px-5 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 text-sm shadow-sm">
+        <div className="text-center p-16 bg-brand-dark rounded-2xl border-2 border-brand-900/30 border-dashed">
+          <div className="w-16 h-16 bg-brand-900/20 text-brand-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">??</div>
+          <p className="text-brand-light font-medium mb-1">No notes yet</p>
+          <p className="text-sm text-brand-light/50 mb-6 max-w-sm mx-auto">Click "New Note" to write your first reflection. It will appear here as a card.</p>
+          <button onClick={() => setIsCreating(true)} className="px-5 py-2 bg-brand-700 text-white rounded-lg font-medium hover:bg-brand-500 text-sm shadow-sm">
             Write First Note
           </button>
         </div>
@@ -258,7 +258,7 @@ export default function JournalGallery() {
               <div 
                 key={entry.id} 
                 onClick={() => navigate(`/journal/${entry.id}`)}
-                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-blue-200 transition-all cursor-pointer flex flex-col h-72 relative group"
+                className="bg-brand-dark rounded-xl shadow-sm border border-brand-900/30 overflow-hidden hover:shadow-md hover:border-brand-500/50 transition-all cursor-pointer flex flex-col h-72 relative group"
               >
                 {/* Rating Badge */}
                 {entry.rating && (
@@ -276,21 +276,21 @@ export default function JournalGallery() {
                   <Trash2 size={16} />
                 </button>
 
-                <div className="h-32 bg-gray-50 relative shrink-0 border-b border-gray-100">
+                <div className="h-32 bg-brand-darker/50 relative shrink-0 border-b border-brand-900/30">
                   {entry.cover_image ? (
                     <img src={entry.cover_image} alt="Cover" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-gray-300">No Cover</div>
+                    <div className="absolute inset-0 flex items-center justify-center text-brand-light/30">No Cover</div>
                   )}
                 </div>
                 <div className="p-5 flex-1 flex flex-col">
-                  <div className="text-xs text-blue-600 font-bold mb-2 uppercase tracking-wider">
+                  <div className="text-xs text-brand-500 font-bold mb-2 uppercase tracking-wider">
                     {dateObj.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" })}
                   </div>
-                  <p className="text-gray-900 font-semibold mb-2 line-clamp-2 leading-tight">
+                  <p className="text-brand-light font-semibold mb-2 line-clamp-2 leading-tight">
                     {entry.summary || "Untitled Note"}
                   </p>
-                  <p className="text-sm text-gray-500 line-clamp-2">
+                  <p className="text-sm text-brand-light/50 line-clamp-2">
                     {entry.body}
                   </p>
                 </div>
@@ -302,4 +302,7 @@ export default function JournalGallery() {
     </div>
   )
 }
+
+
+
 

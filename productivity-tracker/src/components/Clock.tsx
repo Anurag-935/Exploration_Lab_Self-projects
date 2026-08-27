@@ -4,13 +4,13 @@ export default function Clock() {
   const [time, setTime] = useState(new Date())
 
   useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000)
-    return () => clearInterval(timer)
+    const interval = setInterval(() => setTime(new Date()), 1000)
+    return () => clearInterval(interval)
   }, [])
 
   return (
-    <div className="text-4xl font-mono font-bold tracking-tight text-gray-800">
-      {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+    <div className="text-4xl font-light tracking-tight text-brand-light">
+      {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
     </div>
   )
 }

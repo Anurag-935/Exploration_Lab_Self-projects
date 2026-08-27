@@ -17,11 +17,7 @@ export default function Dashboard() {
       completed_at: currentStatus === "open" ? new Date().toISOString() : null
     }).eq("id", taskId)
     
-    // If completing the active task, stop tracking it
-    if (currentStatus === "open" && taskId === activeTaskId) {
-      setActiveTaskId(null)
-    }
-    
+    if (currentStatus === "open" && taskId === activeTaskId) setActiveTaskId(null)
     refetch()
   }
 
@@ -31,7 +27,7 @@ export default function Dashboard() {
     refetch()
   }
 
-  if (loading) return <div className="p-8 text-center text-gray-500">Loading your workspace...</div>
+  if (loading) return <div className="p-8 text-center text-brand-light/50">Loading your workspace...</div>
 
   const openTasks = tasks.filter(t => t.status === "open")
   const doneTasks = tasks.filter(t => t.status === "done")
@@ -42,7 +38,7 @@ export default function Dashboard() {
       {/* Top Row */}
       <div className="flex flex-col md:flex-row md:items-end gap-6 justify-between">
         <div>
-          <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Today</h2>
+          <h2 className="text-sm font-semibold text-brand-500 uppercase tracking-widest mb-2">Today</h2>
           <Clock />
         </div>
         <div className="flex-1 max-w-2xl">
@@ -57,28 +53,26 @@ export default function Dashboard() {
         
         {/* Left Col: Short Tasks */}
         <div className="lg:col-span-2 space-y-6">
-          
-          {/* Active Timer (if task selected) */}
           <Timer activeTask={activeTaskObj} onStop={refetch} />
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="font-semibold text-lg mb-4">Pending Tasks</h3>
+          <div className="bg-brand-dark p-6 rounded-xl shadow-lg border border-brand-900/30">
+            <h3 className="font-semibold text-lg text-brand-light mb-4">Pending Tasks</h3>
             {openTasks.length === 0 ? (
-              <p className="text-gray-500 text-sm italic">All caught up!</p>
+              <p className="text-brand-light/50 text-sm italic">All caught up!</p>
             ) : (
               <ul className="space-y-3">
                 {openTasks.map(task => (
-                  <li key={task.id} className="flex items-start justify-between group">
+                  <li key={task.id} className="flex items-start justify-between group py-2 border-b border-brand-900/20 last:border-0">
                     <div className="flex items-start gap-3 flex-1">
                       <input 
                         type="checkbox" 
                         checked={false} 
                         onChange={() => handleToggleTask(task.id, task.status)} 
-                        className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
+                        className="mt-1 w-5 h-5 rounded border-brand-900 bg-brand-darker text-brand-500 focus:ring-brand-500 focus:ring-offset-brand-dark cursor-pointer" 
                       />
                       <div>
-                        <p className="text-gray-900 font-medium">{task.title}</p>
-                        {task.note && <p className="text-sm text-gray-500">{task.note}</p>}
+                        <p className="text-brand-light font-medium">{task.title}</p>
+                        {task.note && <p className="text-sm text-brand-light/60">{task.note}</p>}
                       </div>
                     </div>
                     
@@ -86,12 +80,12 @@ export default function Dashboard() {
                       {activeTaskId !== task.id && (
                         <button 
                           onClick={() => setActiveTaskId(task.id)}
-                          className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                          className="text-xs px-2 py-1 bg-brand-800 text-brand-light rounded hover:bg-brand-500 transition-colors"
                         >
                           Focus
                         </button>
                       )}
-                      <button onClick={() => handleDeleteTask(task.id)} className="text-xs text-red-500 hover:underline">Delete</button>
+                      <button onClick={() => handleDeleteTask(task.id)} className="text-xs text-brand-500 hover:text-red-400">Delete</button>
                     </div>
                   </li>
                 ))}
@@ -100,12 +94,12 @@ export default function Dashboard() {
           </div>
           
           {doneTasks.length > 0 && (
-            <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-              <h3 className="font-semibold text-sm text-gray-500 mb-4">Completed Today</h3>
+            <div className="bg-brand-dark/50 p-6 rounded-xl border border-brand-900/20">
+              <h3 className="font-semibold text-sm text-brand-light/50 mb-4 tracking-wider uppercase">Completed Today</h3>
               <ul className="space-y-2">
                 {doneTasks.slice(0, 5).map(task => (
-                  <li key={task.id} className="flex items-center gap-3 opacity-60">
-                    <input type="checkbox" checked={true} onChange={() => handleToggleTask(task.id, task.status)} className="w-4 h-4 rounded" />
+                  <li key={task.id} className="flex items-center gap-3 opacity-50 hover:opacity-100 transition-opacity">
+                    <input type="checkbox" checked={true} onChange={() => handleToggleTask(task.id, task.status)} className="w-4 h-4 rounded text-brand-500 bg-brand-darker border-brand-900" />
                     <span className="line-through text-sm">{task.title}</span>
                   </li>
                 ))}
@@ -114,30 +108,27 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Right Col: Stats, Habits, Plans */}
+        {/* Right Col: Stats, Habits */}
         <div className="space-y-6">
-          
           <RadarStats skills={skills} />
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="font-semibold mb-4">Daily Habits</h3>
+          <div className="bg-brand-dark p-6 rounded-xl shadow-lg border border-brand-900/30">
+            <h3 className="font-semibold text-brand-light mb-4">Daily Habits</h3>
             {habits.length === 0 ? (
-              <p className="text-gray-500 text-sm">No habits active.</p>
+              <p className="text-brand-light/50 text-sm">No habits active.</p>
             ) : (
               <ul className="space-y-3">
                 {habits.map(habit => (
                   <li key={habit.id} className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                    <span className="font-medium text-gray-700">{habit.title}</span>
+                    <div className="w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_8px_rgba(177,72,88,0.6)]"></div>
+                    <span className="font-medium text-brand-light">{habit.title}</span>
                   </li>
                 ))}
               </ul>
             )}
           </div>
-
         </div>
       </div>
     </div>
   )
 }
-

@@ -52,12 +52,12 @@ export default function ImageCropper({ imageSrc, onCropDone, onCancel }: Props) 
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl w-full max-w-2xl overflow-hidden flex flex-col h-[80vh]">
+      <div className="bg-brand-dark rounded-xl w-full max-w-2xl overflow-hidden flex flex-col h-[80vh]">
         <div className="p-4 border-b flex justify-between items-center">
           <h3 className="font-semibold text-lg">Adjust Cover Image</h3>
-          <button onClick={onCancel} className="text-gray-500 hover:text-gray-900">Cancel</button>
+          <button onClick={onCancel} className="text-brand-light/50 hover:text-brand-light">Cancel</button>
         </div>
-        <div className="relative flex-1 bg-gray-900">
+        <div className="relative flex-1 bg-black">
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -68,7 +68,7 @@ export default function ImageCropper({ imageSrc, onCropDone, onCancel }: Props) 
             onZoomChange={setZoom}
           />
         </div>
-        <div className="p-4 border-t bg-gray-50 flex items-center justify-between">
+        <div className="p-4 border-t bg-brand-darker flex items-center justify-between">
           <input
             type="range"
             value={zoom}
@@ -81,7 +81,7 @@ export default function ImageCropper({ imageSrc, onCropDone, onCancel }: Props) 
           />
           <button
             onClick={generateCroppedImage}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+            className="px-6 py-2 bg-brand-700 text-white rounded-lg font-medium hover:bg-brand-500"
           >
             Apply Crop
           </button>
@@ -90,3 +90,4 @@ export default function ImageCropper({ imageSrc, onCropDone, onCancel }: Props) 
     </div>
   )
 }
+

@@ -10,13 +10,13 @@ export default function RatingGauge({ rating }: { rating: number }) {
   const strokeDashoffset = pathLength - (pathLength * percentage)
 
   return (
-    <div className="relative flex flex-col items-center justify-end w-12 h-10 bg-white/90 backdrop-blur-sm rounded-t-full shadow-sm p-1 border border-gray-200">
+    <div className="relative flex flex-col items-center justify-end w-12 h-10 bg-brand-dark/90 backdrop-blur-sm rounded-t-full shadow-sm p-1 border border-brand-900/50">
       <svg viewBox="0 0 100 55" className="w-full h-full overflow-visible">
         {/* Background Track */}
         <path
           d="M 10 50 A 40 40 0 0 1 90 50"
           fill="none"
-          stroke="#f3f4f6"
+          stroke="#2A2A2B"
           strokeWidth="12"
           strokeLinecap="round"
         />
@@ -24,7 +24,7 @@ export default function RatingGauge({ rating }: { rating: number }) {
         <path
           d="M 10 50 A 40 40 0 0 1 90 50"
           fill="none"
-          stroke="#fbbf24"
+          stroke="#B14858"
           strokeWidth="12"
           strokeLinecap="round"
           strokeDasharray={pathLength}
@@ -33,9 +33,10 @@ export default function RatingGauge({ rating }: { rating: number }) {
         />
       </svg>
       {/* Number in the center */}
-      <div className="absolute bottom-1 text-xs font-bold text-gray-800">
-        {rating}<span className="text-[10px] text-gray-400">/5</span>
+      <div className="absolute bottom-1 text-xs font-bold text-brand-light">
+        {rating}<span className="text-[10px] text-brand-light/50">/5</span>
       </div>
     </div>
   )
 }
+

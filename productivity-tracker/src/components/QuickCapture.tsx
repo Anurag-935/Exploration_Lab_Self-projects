@@ -32,12 +32,12 @@ export default function QuickCapture({ onCaptured }: Props) {
   }
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+    <div className="bg-brand-dark p-4 rounded-xl shadow-sm border border-brand-900/30">
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
         <select 
           value={type} 
           onChange={(e) => setType(e.target.value as any)}
-          className="px-3 py-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-100 outline-none"
+          className="px-3 py-2 border border-brand-900/50 rounded-lg bg-brand-darker text-brand-light focus:ring-2 focus:ring-brand-500/50 outline-none"
         >
           <option value="task">Short Task</option>
           <option value="habit">Habit</option>
@@ -48,7 +48,7 @@ export default function QuickCapture({ onCaptured }: Props) {
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-100 outline-none"
+          className="flex-1 px-4 py-2 bg-brand-darker text-brand-light border border-brand-900/50 rounded-lg focus:ring-2 focus:ring-brand-500/50 outline-none"
           placeholder={`Add a new ${type}...`}
           autoFocus
         />
@@ -56,7 +56,7 @@ export default function QuickCapture({ onCaptured }: Props) {
         <button 
           type="submit" 
           disabled={loading || !text.trim()}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
+          className="px-6 py-2 bg-brand-700 text-white rounded-lg font-medium hover:bg-brand-500 disabled:opacity-50"
         >
           Capture
         </button>
@@ -64,3 +64,6 @@ export default function QuickCapture({ onCaptured }: Props) {
     </div>
   )
 }
+
+
+

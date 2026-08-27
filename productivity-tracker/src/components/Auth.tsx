@@ -23,8 +23,8 @@ export default function Auth() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-md p-8 space-y-4 bg-white rounded shadow">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-brand-darker">
+      <div className="w-full max-w-md p-8 space-y-4 bg-brand-dark rounded shadow">
         <h2 className="text-2xl font-bold text-center">Productivity Tracker</h2>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
@@ -33,7 +33,7 @@ export default function Auth() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+              className="w-full px-3 py-2 bg-brand-darker border-brand-900/50 rounded focus:outline-none focus:ring focus:ring-brand-500/50 text-brand-light border"
               required
             />
           </div>
@@ -43,7 +43,7 @@ export default function Auth() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+              className="w-full px-3 py-2 bg-brand-darker border-brand-900/50 rounded focus:outline-none focus:ring focus:ring-brand-500/50 text-brand-light border"
               required
             />
           </div>
@@ -51,7 +51,7 @@ export default function Auth() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-2 font-medium text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50"
+            className="w-full px-4 py-2 font-medium text-white bg-brand-700 rounded hover:bg-brand-500 disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
@@ -60,3 +60,5 @@ export default function Auth() {
     </div>
   )
 }
+
+

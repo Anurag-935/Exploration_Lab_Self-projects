@@ -28,8 +28,8 @@ export default function ConsistencyGraph({ tasks }: Props) {
 
   return (
     <div className="w-full">
-      <h3 className="text-sm font-medium text-gray-500 mb-2 uppercase tracking-wide">Consistency</h3>
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <h3 className="text-sm font-medium text-brand-light/50 mb-2 uppercase tracking-wide">Consistency</h3>
+      <div className="bg-brand-dark p-4 rounded-xl shadow-sm border border-brand-900/30 overflow-hidden">
         <CalendarHeatmap
           startDate={startDate}
           endDate={today}
@@ -42,9 +42,10 @@ export default function ConsistencyGraph({ tasks }: Props) {
         />
       </div>
       <style>{`
-        .react-calendar-heatmap .color-empty { fill: #ebedf0; }
-        .react-calendar-heatmap .color-scale-1 { fill: #3b82f6; }
+        .react-calendar-heatmap .color-empty { fill: #2A2A2B; }
+        .react-calendar-heatmap .color-scale-1 { fill: #B14858; }
       `}</style>
     </div>
   )
 }
+
