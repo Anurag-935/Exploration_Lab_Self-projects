@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useNavigate } from "react-router-dom"
 import { supabase } from "../lib/supabase"
+import ImageCropper from "../components/ImageCropper"
 
 type JournalEntry = {
   id: string
@@ -7,6 +9,7 @@ type JournalEntry = {
   summary: string
   body: string
   cover_image: string | null
+  rating: number | null
 }
 
 export default function JournalGallery() {
@@ -14,15 +17,22 @@ export default function JournalGallery() {
   const [loading, setLoading] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const navigate = useNavigate()
 
   // Form State
   const [summary, setSummary] = useState("")
   const [body, setBody] = useState("")
-  const [file, setFile] = useState<File | null>(null)
+  const [rating, setRating] = useState<number>(0)
+  
+  // Image State
+  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null)
+  const [croppedBlob, setCroppedBlob] = useState<Blob | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const fetchEntries = async () => {
     setLoading(true)
-    const { data } = await supabase.from("daily_journals").select("*").order("date", { ascending: false })
+    const { data } = await supabase.from("daily_journals").select("*").order("created_at", { ascending: false })
     if (data) setEntries(data)
     setLoading(false)
   }
@@ -30,6 +40,28 @@ export default function JournalGallery() {
   useEffect(() => {
     fetchEntries()
   }, [])
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const reader = new FileReader()
+      reader.addEventListener("load", () => setRawImageSrc(reader.result?.toString() || null))
+      reader.readAsDataURL(e.target.files[0])
+    }
+  }
+
+  const handleCropDone = (blob: Blob) => {
+    setCroppedBlob(blob)
+    setPreviewUrl(URL.createObjectURL(blob))
+    setRawImageSrc(null)
+  }
+
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation()
+    if (window.confirm("Are you sure you want to delete this journal note?")) {
+      await supabase.from("daily_journals").delete().eq("id", id)
+      fetchEntries()
+    }
+  }
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,15 +73,13 @@ export default function JournalGallery() {
 
       let coverUrl = null
 
-      if (file) {
-        const fileExt = file.name.split('.').pop()
-        const fileName = `${Math.random()}.${fileExt}`
+      if (croppedBlob) {
+        const fileName = `${Math.random()}.jpg`
         const filePath = `${userData.user.id}/${fileName}`
 
-        // Ensure you have created a public bucket named "journals" in Supabase!
         const { error: uploadError } = await supabase.storage
           .from('journals')
-          .upload(filePath, file)
+          .upload(filePath, croppedBlob, { contentType: 'image/jpeg' })
 
         if (uploadError) throw uploadError
 
@@ -60,22 +90,26 @@ export default function JournalGallery() {
         coverUrl = publicUrl
       }
 
-      await supabase.from("daily_journals").insert({
+      const { error: insertError } = await supabase.from("daily_journals").insert({
         user_id: userData.user.id,
         date: new Date().toISOString().split("T")[0],
         summary: summary.trim(),
         body: body.trim(),
-        cover_image: coverUrl
+        cover_image: coverUrl,
+        rating: rating > 0 ? rating : null
       })
+      if (insertError) throw insertError
 
       setIsCreating(false)
       setSummary("")
       setBody("")
-      setFile(null)
+      setRating(0)
+      setCroppedBlob(null)
+      setPreviewUrl(null)
       fetchEntries()
     } catch (err: any) {
-      console.error(err);
-      alert("Error saving entry: " + (err.message || err.details || JSON.stringify(err)));
+      console.error(err)
+      alert("Error saving note: " + (err.message || JSON.stringify(err)))
     } finally {
       setUploading(false)
     }
@@ -85,63 +119,118 @@ export default function JournalGallery() {
 
   return (
     <div className="space-y-6 pb-12">
+      {rawImageSrc && (
+        <ImageCropper 
+          imageSrc={rawImageSrc} 
+          onCropDone={handleCropDone} 
+          onCancel={() => { setRawImageSrc(null); if (fileInputRef.current) fileInputRef.current.value = "" }} 
+        />
+      )}
+
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Journal</h2>
         {!isCreating && (
           <button 
             onClick={() => setIsCreating(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded font-medium hover:bg-blue-700 text-sm"
+            className="px-4 py-2 bg-blue-600 text-white rounded font-medium hover:bg-blue-700 text-sm shadow-sm"
           >
-            New Entry
+            New Note
           </button>
         )}
       </div>
 
       {isCreating && (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <h3 className="font-semibold mb-4">Write a new entry</h3>
-          <form onSubmit={handleCreate} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Cover Image</label>
-              <input 
-                type="file" 
-                accept="image/*"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-                className="w-full text-sm"
-              />
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+          <h3 className="font-semibold mb-6 text-lg">Write a new note</h3>
+          <form onSubmit={handleCreate} className="space-y-6">
+            
+            <div className="flex flex-col sm:flex-row gap-6">
+              {/* Image Upload Dropzone */}
+              <div className="w-full sm:w-1/3">
+                <label className="block text-sm font-medium mb-2">Cover Image (Optional)</label>
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`w-full h-32 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer overflow-hidden transition-colors ${previewUrl ? 'border-transparent' : 'border-gray-300 hover:border-blue-500 bg-gray-50 hover:bg-blue-50'}`}
+                >
+                  {previewUrl ? (
+                    <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="text-center text-sm text-gray-500">
+                      <span className="text-blue-600 font-medium">Click to upload</span>
+                      <p className="text-xs mt-1 text-gray-400">JPG, PNG up to 5MB</p>
+                    </div>
+                  )}
+                </div>
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                {previewUrl && (
+                  <button type="button" onClick={(e) => { e.stopPropagation(); setPreviewUrl(null); setCroppedBlob(null); }} className="text-xs text-red-500 mt-2 hover:underline">
+                    Remove Image
+                  </button>
+                )}
+              </div>
+
+              {/* Rating & Summary */}
+              <div className="flex-1 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Day Rating (Out of 5)</label>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map(num => (
+                      <button
+                        key={num}
+                        type="button"
+                        onClick={() => setRating(num)}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${rating === num ? 'bg-yellow-400 text-yellow-900 border-2 border-yellow-500 shadow-md scale-110' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                      >
+                        {num}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Summary (1-2 lines)</label>
+                  <input 
+                    type="text" 
+                    value={summary}
+                    onChange={(e) => setSummary(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
+                    placeholder="What happened today?"
+                    required
+                  />
+                </div>
+              </div>
             </div>
+
             <div>
-              <label className="block text-sm font-medium mb-1">Summary (1-2 lines)</label>
-              <input 
-                type="text" 
-                value={summary}
-                onChange={(e) => setSummary(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-100 outline-none"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Full Entry</label>
+              <label className="block text-sm font-medium mb-2">Full Entry</label>
               <textarea 
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg h-32 focus:ring focus:ring-blue-100 outline-none"
+                placeholder="Write your detailed thoughts here..."
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg h-40 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all resize-none"
               />
             </div>
-            <div className="flex justify-end gap-3">
+
+            <div className="flex justify-end gap-3 pt-4 border-t">
               <button 
                 type="button" 
                 onClick={() => setIsCreating(false)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium"
+                className="px-5 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors"
               >
                 Cancel
               </button>
               <button 
                 type="submit" 
                 disabled={uploading || !summary}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
               >
-                {uploading ? "Saving..." : "Save Entry"}
+                {uploading ? "Saving..." : "Save Note"}
               </button>
             </div>
           </form>
@@ -149,34 +238,57 @@ export default function JournalGallery() {
       )}
 
       {entries.length === 0 && !isCreating ? (
-        <div className="text-center p-12 bg-white rounded-xl border border-gray-100 border-dashed">
-          <p className="text-gray-500 mb-2">No journal entries yet.</p>
-          <p className="text-sm text-gray-400">Click "New Entry" to write your first reflection.</p>
+        <div className="text-center p-16 bg-white rounded-2xl border-2 border-gray-100 border-dashed">
+          <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">??</div>
+          <p className="text-gray-900 font-medium mb-1">No notes yet</p>
+          <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">Click "New Note" to write your first reflection. It will appear here as a card.</p>
+          <button onClick={() => setIsCreating(true)} className="px-5 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 text-sm shadow-sm">
+            Write First Note
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {entries.map(entry => {
             const dateObj = new Date(entry.date)
-            // Add a timezone offset to fix JS date parsing off-by-one day bugs
             dateObj.setMinutes(dateObj.getMinutes() + dateObj.getTimezoneOffset())
             
             return (
-              <div key={entry.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col h-72">
-                <div className="h-32 bg-gray-100 relative shrink-0">
+              <div 
+                key={entry.id} 
+                onClick={() => navigate(`/journal/${entry.id}`)}
+                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-blue-200 transition-all cursor-pointer flex flex-col h-72 relative group"
+              >
+                {/* Rating Badge */}
+                {entry.rating && (
+                  <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-yellow-400 border-2 border-yellow-500 flex items-center justify-center text-yellow-900 text-sm font-bold shadow-sm z-10">
+                    {entry.rating}
+                  </div>
+                )}
+                
+                {/* Delete Button */}
+                <button 
+                  onClick={(e) => handleDelete(e, entry.id)}
+                  className="absolute top-3 left-3 w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all shadow-sm z-10"
+                  title="Delete Note"
+                >
+                  ×
+                </button>
+
+                <div className="h-32 bg-gray-50 relative shrink-0 border-b border-gray-100">
                   {entry.cover_image ? (
                     <img src={entry.cover_image} alt="Cover" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-gray-400">No Cover</div>
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-300">No Cover</div>
                   )}
                 </div>
-                <div className="p-4 flex-1 flex flex-col">
-                  <div className="text-xs text-blue-600 font-semibold mb-2">
+                <div className="p-5 flex-1 flex flex-col">
+                  <div className="text-xs text-blue-600 font-bold mb-2 uppercase tracking-wider">
                     {dateObj.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" })}
                   </div>
-                  <p className="text-gray-900 font-medium mb-1 line-clamp-2 leading-tight">
-                    {entry.summary || "Untitled Entry"}
+                  <p className="text-gray-900 font-semibold mb-2 line-clamp-2 leading-tight">
+                    {entry.summary || "Untitled Note"}
                   </p>
-                  <p className="text-sm text-gray-500 line-clamp-3">
+                  <p className="text-sm text-gray-500 line-clamp-2">
                     {entry.body}
                   </p>
                 </div>

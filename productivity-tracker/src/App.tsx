@@ -5,6 +5,7 @@ import { supabase } from "./lib/supabase"
 import MainLayout from "./layouts/MainLayout"
 import Dashboard from "./pages/Dashboard"
 import JournalGallery from "./pages/JournalGallery"
+import JournalDetail from "./pages/JournalDetail"
 import Auth from "./components/Auth"
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="journal" element={<JournalGallery />} />
+          <Route path="journal/:id" element={<JournalDetail />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
