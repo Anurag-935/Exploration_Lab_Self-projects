@@ -1,22 +1,34 @@
+import { useState } from "react"
 import { useData } from "../hooks/useData"
 import { supabase } from "../lib/supabase"
 import Clock from "../components/Clock"
 import QuickCapture from "../components/QuickCapture"
 import ConsistencyGraph from "../components/ConsistencyGraph"
+import RadarStats from "../components/RadarStats"
+import Timer from "../components/Timer"
+import { Task } from "../types"
 
 export default function Dashboard() {
-  const { tasks, habits, longPlans, loading, refetch } = useData()
+  const { tasks, habits, longPlans, skills, loading, refetch } = useData()
+  const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
 
   const handleToggleTask = async (taskId: string, currentStatus: "open" | "done") => {
     await supabase.from("tasks").update({
       status: currentStatus === "open" ? "done" : "open",
       completed_at: currentStatus === "open" ? new Date().toISOString() : null
     }).eq("id", taskId)
+    
+    // If completing the active task, stop tracking it
+    if (currentStatus === "open" && taskId === activeTaskId) {
+      setActiveTaskId(null)
+    }
+    
     refetch()
   }
 
   const handleDeleteTask = async (taskId: string) => {
     await supabase.from("tasks").delete().eq("id", taskId)
+    if (taskId === activeTaskId) setActiveTaskId(null)
     refetch()
   }
 
@@ -24,10 +36,11 @@ export default function Dashboard() {
 
   const openTasks = tasks.filter(t => t.status === "open")
   const doneTasks = tasks.filter(t => t.status === "done")
+  const activeTaskObj = tasks.find(t => t.id === activeTaskId) || null
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Top Row: Clock & Quick Capture */}
+      {/* Top Row */}
       <div className="flex flex-col md:flex-row md:items-end gap-6 justify-between">
         <div>
           <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Today</h2>
@@ -38,7 +51,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Consistency Graph */}
       <ConsistencyGraph tasks={tasks} habits={habits} />
 
       {/* Main Content Grid */}
@@ -46,6 +58,10 @@ export default function Dashboard() {
         
         {/* Left Col: Short Tasks */}
         <div className="lg:col-span-2 space-y-6">
+          
+          {/* Active Timer (if task selected) */}
+          <Timer activeTask={activeTaskObj} onStop={refetch} />
+
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <h3 className="font-semibold text-lg mb-4">Pending Tasks</h3>
             {openTasks.length === 0 ? (
@@ -54,7 +70,7 @@ export default function Dashboard() {
               <ul className="space-y-3">
                 {openTasks.map(task => (
                   <li key={task.id} className="flex items-start justify-between group">
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-3 flex-1">
                       <input 
                         type="checkbox" 
                         checked={false} 
@@ -66,7 +82,18 @@ export default function Dashboard() {
                         {task.note && <p className="text-sm text-gray-500">{task.note}</p>}
                       </div>
                     </div>
-                    <button onClick={() => handleDeleteTask(task.id)} className="text-xs text-red-500 hover:underline opacity-0 group-hover:opacity-100 transition-opacity">Delete</button>
+                    
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {activeTaskId !== task.id && (
+                        <button 
+                          onClick={() => setActiveTaskId(task.id)}
+                          className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                        >
+                          Focus
+                        </button>
+                      )}
+                      <button onClick={() => handleDeleteTask(task.id)} className="text-xs text-red-500 hover:underline">Delete</button>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -88,8 +115,11 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Right Col: Habits & Plans */}
+        {/* Right Col: Stats, Habits, Plans */}
         <div className="space-y-6">
+          
+          <RadarStats skills={skills} />
+
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <h3 className="font-semibold mb-4">Daily Habits</h3>
             {habits.length === 0 ? (
@@ -106,22 +136,7 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="font-semibold mb-4">Long Plans</h3>
-            {longPlans.length === 0 ? (
-              <p className="text-gray-500 text-sm">No active plans.</p>
-            ) : (
-              <ul className="space-y-3">
-                {longPlans.map(plan => (
-                  <li key={plan.id} className="text-gray-700 border-l-2 border-blue-500 pl-3 py-1">
-                    {plan.title}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
         </div>
-
       </div>
     </div>
   )
