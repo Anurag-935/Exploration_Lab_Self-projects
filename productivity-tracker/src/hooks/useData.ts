@@ -10,7 +10,7 @@ export const runDailyRollover = async (userId: string) => {
   // 1. Find tasks that are 'open', created before today, and not already rolled over
   const { data: oldTasks } = await supabase
     .from("tasks")
-    .select("id, title, created_at, carried_over_count")
+    .select("id, title, created_at, carried_over_count, task_type")
     .eq("status", "open")
     .eq("user_id", userId)
     .gte("carried_over_count", 0) // not rolled over
@@ -88,6 +88,7 @@ export function useData() {
     refetch: fetchData, lastRefreshed
   }
 }
+
 
 
 
