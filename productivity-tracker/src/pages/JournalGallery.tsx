@@ -74,7 +74,8 @@ export default function JournalGallery() {
       setFile(null)
       fetchEntries()
     } catch (err: any) {
-      alert("Error: " + err.message + "\nMake sure you created the 'journals' bucket in Supabase!")
+      console.error(err);
+      alert("Error saving entry: " + (err.message || err.details || JSON.stringify(err)));
     } finally {
       setUploading(false)
     }
