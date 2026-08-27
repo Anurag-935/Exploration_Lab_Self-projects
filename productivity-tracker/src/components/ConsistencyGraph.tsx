@@ -1,11 +1,11 @@
 import CalendarHeatmap from "react-calendar-heatmap"
 import "react-calendar-heatmap/dist/styles.css"
-import { Task, Habit, LongPlan } from "../types"
+import { Task, Habit } from "../types"
 import { useMemo } from "react"
 
 type Props = {
   tasks: Task[]
-  habits: Habit[] // we need habit_logs actually, but for now just basic tasks
+  habits: Habit[]
 }
 
 export default function ConsistencyGraph({ tasks }: Props) {
@@ -34,9 +34,9 @@ export default function ConsistencyGraph({ tasks }: Props) {
           startDate={startDate}
           endDate={today}
           values={data}
-          classForValue={(value) => {
+          classForValue={(value: any) => {
             if (!value) return "color-empty"
-            return `color-scale-1` // simple one color for now
+            return `color-scale-1`
           }}
           showWeekdayLabels
         />
