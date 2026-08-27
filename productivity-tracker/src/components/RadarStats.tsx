@@ -66,20 +66,11 @@ export default function RadarStats({ tasks }: Props) {
         </ResponsiveContainer>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 flex-1">
-        {stats.data.map(stat => (
-          <div key={stat.name} className="bg-brand-darker p-3 rounded-lg border border-brand-900/50">
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-xs font-bold text-brand-light uppercase">{stat.name}</span>
-              <span className="text-xs font-bold text-brand-500">Lv.{stat.level}</span>
-            </div>
-            <div className="w-full h-1.5 bg-black/50 rounded-full overflow-hidden">
-              <div className="h-full bg-brand-500 rounded-full" style={{ width: `${stat.progress}%` }}></div>
-            </div>
-            <div className="text-[10px] text-brand-light/50 text-right mt-1">{stat.xp} Total XP</div>
-          </div>
-        ))}
+            <div className="mt-2 bg-brand-darker p-4 rounded-lg border border-brand-900/50 flex flex-col items-center justify-center">
+        <span className="text-xs font-bold text-brand-light/70 uppercase tracking-wider mb-1">Average Global EXP</span>
+        <span className="text-2xl font-bold text-brand-500">{Math.round(stats.data.reduce((sum, s) => sum + s.xp, 0) / 6)}</span>
       </div>
     </div>
   )
 }
+

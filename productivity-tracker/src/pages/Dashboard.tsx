@@ -62,26 +62,22 @@ export default function Dashboard() {
       </div>
 
       
-            {/* Main Content Area */}
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
+                  {/* Main Content Area */}
+      <div className="flex flex-col gap-8">
         
-        {/* Left Col: Main Task Table (~65%) */}
-        <div className="w-full lg:w-[65%] space-y-6">
+        {/* Full width Main Task Table */}
+        <div className="w-full space-y-6">
           <Timer activeTask={tasks.find(t => t.id === activeTaskId) || null} onStop={refetch} />
           <MainTaskTable tasks={tasks as any} refetch={refetch} onFocus={setActiveTaskId} />
         </div>
 
-        {/* Right Col: Radar Chart (~35%) */}
-        <div className="w-full lg:w-[35%] space-y-6">
-          <RadarStats tasks={tasks as any} />
-          {/* Calendar heatmap was mentioned not to be touched, so I will leave ConsistencyGraph here if it was here.
-              Wait, in my previous edit, ConsistencyGraph was above the Main Content grid. I will keep it there. */}
+        {/* Bottom Left: Radar Chart (~35% width, but sits on the left of its row) */}
+        <div className="flex w-full">
+          <div className="w-full md:w-[40%] lg:w-[35%]">
+            <RadarStats tasks={tasks as any} />
+          </div>
         </div>
       </div>
     </div>
   )
 }
-
-
-
-

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { supabase } from "../lib/supabase"
 import { Task } from "../types"
+import { X } from "lucide-react"
 
 const PREDEFINED_SKILLS = ["Technical", "Communication", "Creativity", "Discipline", "Learning", "Wellness"]
 
@@ -134,13 +135,13 @@ export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: Task
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-brand-900/50 text-brand-light/50 text-xs uppercase tracking-wider">
-              <th className="py-2 px-3">Priority</th>
-              <th className="py-2 px-3">Title</th>
-              <th className="py-2 px-3">Est. Time</th>
-              <th className="py-2 px-3">EXP</th>
-              <th className="py-2 px-3">Skills</th>
-              <th className="py-2 px-3">Type</th>
-              <th className="py-2 px-3">Description</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">Priority</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">Title</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">Est. Time</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">EXP</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">Skills</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">Type</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">Description</th>
               <th className="py-2 px-3 text-center">Done</th><th className="py-2 px-3 text-center">Action</th>
             </tr>
           </thead>
@@ -153,20 +154,20 @@ export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: Task
                   onClick={() => openEdit(task)}
                   className="border-b border-brand-900/20 hover:bg-brand-darker transition-colors cursor-pointer group"
                 >
-                  <td className="py-3 px-3">{renderPriority(task.priority || 3)}</td>
-                  <td className="py-3 px-3 font-medium text-brand-light">{task.title}</td>
-                  <td className="py-3 px-3 text-brand-light/70">{task.time_estimate || 0}m</td>
-                  <td className="py-3 px-3 text-brand-500 font-bold">+{task.exp_value || 0}</td>
-                  <td className="py-3 px-3">
+                  <td className="py-4 px-4 border-r border-brand-900/10">{renderPriority(task.priority || 3)}</td>
+                  <td className="py-4 px-4 border-r border-brand-900/10 font-semibold text-brand-light text-base">{task.title}</td>
+                  <td className="py-4 px-4 border-r border-brand-900/10 text-brand-light/70">{task.time_estimate || 0}m</td>
+                  <td className="py-4 px-4 border-r border-brand-900/10 text-brand-500 font-bold text-lg">+{task.exp_value || 0}</td>
+                  <td className="py-4 px-4 border-r border-brand-900/10">
                     <div className="flex flex-wrap gap-1">
                       {sNames.length > 0 ? sNames.map(s => (
                         <span key={s} className="px-1.5 py-0.5 bg-brand-900/30 text-brand-500 text-[10px] rounded uppercase">{s}</span>
                       )) : <span className="text-brand-light/30 text-xs">-</span>}
                     </div>
                   </td>
-                  <td className="py-3 px-3 text-xs text-brand-light/70">{task.task_type || "Short Task"}</td>
-                  <td className="py-3 px-3 text-sm text-brand-light/50 truncate max-w-[150px]">{task.note || "-"}</td>
-                  <td className="py-3 px-3 text-center">
+                  <td className="py-4 px-4 border-r border-brand-900/10 text-xs font-medium text-brand-light/70 uppercase tracking-wide">{task.task_type || "Short Task"}</td>
+                  <td className="py-4 px-4 border-r border-brand-900/10 text-sm text-brand-light/60 max-w-[250px]">{task.note || "-"}</td>
+                  <td className="py-4 px-4 border-r border-brand-900/10 text-center">
                     <input 
                       type="checkbox" 
                       checked={task.status === "done"} 
@@ -197,7 +198,7 @@ export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: Task
           <div className="bg-brand-dark rounded-xl w-full max-w-2xl overflow-hidden border border-brand-900/50">
             <div className="p-4 border-b border-brand-900/50 flex justify-between items-center">
               <h3 className="font-semibold text-brand-light text-lg">{editingTask ? "Edit Task" : "New Task"}</h3>
-              <button onClick={() => { setEditingTask(null); setShowAddModal(false) }} className="text-brand-light/50 hover:text-brand-light text-xl">×</button>
+              <button onClick={() => { setEditingTask(null); setShowAddModal(false) }} className="text-brand-light/50 hover:text-brand-light text-xl"><X size={20} /></button>
             </div>
             
             <form onSubmit={handleSave} className="p-6 space-y-4">
@@ -270,4 +271,6 @@ export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: Task
     </div>
   )
 }
+
+
 
