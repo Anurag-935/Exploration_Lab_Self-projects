@@ -3,13 +3,15 @@ import { useData } from "../hooks/useData"
 import { supabase } from "../lib/supabase"
 import Clock from "../components/Clock"
 import BacklogWidget from "../components/BacklogWidget"
+import TimeSpentWidget from "../components/TimeSpentWidget"
+import DatePendingWidget from "../components/DatePendingWidget"
 import QuickCapture from "../components/QuickCapture"
 import ConsistencyGraph from "../components/ConsistencyGraph"
 import RadarStats from "../components/RadarStats"
 import Timer from "../components/Timer"
 
 export default function Dashboard() {
-  const { tasks, habits, skills, loading, refetch } = useData()
+  const { tasks, habits, skills, loading, refetch, lastRefreshed } = useData()
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
 
   const handleToggleTask = async (taskId: string, currentStatus: "open" | "done") => {
@@ -48,14 +50,14 @@ export default function Dashboard() {
           <BacklogWidget onTaskAdded={refetch} />
         </div>
         
-        {/* 3. Time-Spent (~20%) - Placeholder for Phase C */}
-        <div className="w-full md:w-[20%] bg-brand-dark p-4 rounded-xl border border-brand-900/30 flex items-center justify-center">
-          <span className="text-brand-light/50 text-sm">Time-Spent (Phase C)</span>
+        {/* 3. Time-Spent (~20%) */}
+        <div className="w-full md:w-[20%]">
+          <TimeSpentWidget refreshTrigger={lastRefreshed} />
         </div>
         
-        {/* 4. Date/Pending (~20%) - Placeholder for Phase D */}
-        <div className="w-full md:w-[20%] bg-brand-dark p-4 rounded-xl border border-brand-900/30 flex items-center justify-center">
-          <span className="text-brand-light/50 text-sm">Date/Pending (Phase D)</span>
+        {/* 4. Date/Pending (~20%) */}
+        <div className="w-full md:w-[20%]">
+          <DatePendingWidget tasks={tasks} />
         </div>
       </div>
 
@@ -145,6 +147,9 @@ export default function Dashboard() {
     </div>
   )
 }
+
+
+
 
 
 

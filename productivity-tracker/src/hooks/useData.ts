@@ -8,6 +8,7 @@ export function useData() {
   const [longPlans, setLongPlans] = useState<LongPlan[]>([])
   const [skills, setSkills] = useState<Skill[]>([])
   const [loading, setLoading] = useState(true)
+  const [lastRefreshed, setLastRefreshed] = useState(Date.now())
 
   const fetchData = async () => {
     setLoading(true)
@@ -28,6 +29,7 @@ export function useData() {
     if (plansData) setLongPlans(plansData)
     if (skillsData) setSkills(skillsData)
     setLoading(false)
+    setLastRefreshed(Date.now())
   }
 
   useEffect(() => {
@@ -40,6 +42,7 @@ export function useData() {
     longPlans,
     skills,
     loading,
-    refetch: fetchData
+    refetch: fetchData, lastRefreshed
   }
 }
+

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { supabase } from "../lib/supabase"
 import { Task } from "../types"
+import { Trash2, X } from "lucide-react"
 
 type BacklogItem = {
   id: string
@@ -136,12 +137,12 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
         <div>
           <h3 className="text-xs font-semibold text-brand-500 uppercase tracking-widest mb-2 flex items-center justify-between">
             Recommended Next
-            <span className="bg-brand-900/30 text-brand-500 px-2 py-0.5 rounded text-[10px]">{backlog.length} in Backlog</span>
+            <span className="bg-brand-900/30 text-brand-500 px-2 py-0.5 rounded text-[10px]">{backlog.length} Pending Stuff</span>
           </h3>
           {recommendedItem ? (
             <p className="text-brand-light font-medium line-clamp-2">{recommendedItem.title}</p>
           ) : (
-            <p className="text-brand-light/40 text-sm italic">Backlog is empty. Add items to capture quick thoughts.</p>
+            <p className="text-brand-light/40 text-sm italic">Nothing pending. Add items to capture quick thoughts.</p>
           )}
         </div>
 
@@ -150,7 +151,7 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
             onClick={() => setShowListModal(true)}
             className="flex-1 px-3 py-1.5 bg-brand-darker border border-brand-900/50 text-brand-light rounded text-xs font-medium hover:bg-brand-900 transition-colors"
           >
-            Manage Backlog
+            Manage Pending
           </button>
           {recommendedItem && (
             <button 
@@ -198,15 +199,15 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
         </div>
       )}
 
-      {/* Manage Backlog Modal */}
+      {/* Manage Pending Modal */}
       {showListModal && (
         <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4">
           <div className="bg-brand-dark rounded-xl w-full max-w-lg overflow-hidden border border-brand-900/50 flex flex-col h-[70vh]">
             <div className="p-4 border-b border-brand-900/50 flex justify-between items-center">
               <h3 className="font-semibold text-brand-light text-lg">
-                Backlog <span className="text-brand-500 text-sm ml-2">({localBacklog.length} total)</span>
+                Pending Stuff <span className="text-brand-500 text-sm ml-2">({localBacklog.length} total)</span>
               </h3>
-              <button onClick={() => { setShowListModal(false); setLocalBacklog(backlog); }} className="text-brand-light/50 hover:text-brand-light text-xl">×</button>
+              <button onClick={() => { setShowListModal(false); setLocalBacklog(backlog); }} className="text-brand-light/50 hover:text-brand-light text-xl"><X size={20} /></button>
             </div>
             
             <div className="p-4 border-b border-brand-900/30 bg-brand-darker/50">
@@ -225,7 +226,7 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
 
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
               {localBacklog.length === 0 && (
-                <p className="text-center text-brand-light/40 italic py-8">No items in backlog.</p>
+                <p className="text-center text-brand-light/40 italic py-8">No items Pending Stuff.</p>
               )}
               {localBacklog.map(item => (
                 <div key={item.id} className="flex gap-2 group items-center">
@@ -240,7 +241,7 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
                     className="w-8 h-8 flex items-center justify-center text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded transition-colors"
                     title="Delete"
                   >
-                    ×
+                    <Trash2 size={16} />
                   </button>
                 </div>
               ))}
@@ -256,3 +257,5 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
     </>
   )
 }
+
+
