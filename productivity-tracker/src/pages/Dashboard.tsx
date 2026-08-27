@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useData } from "../hooks/useData"
 import { supabase } from "../lib/supabase"
 import Clock from "../components/Clock"
+import BacklogWidget from "../components/BacklogWidget"
 import QuickCapture from "../components/QuickCapture"
 import ConsistencyGraph from "../components/ConsistencyGraph"
 import RadarStats from "../components/RadarStats"
@@ -36,15 +37,15 @@ export default function Dashboard() {
   return (
     <div className="space-y-8 pb-12">
       {/* Top Row: Clock | Recommendation | Time-Spent | Date/Pending */}
-      <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+      <div className="flex flex-col md:flex-row items-stretch gap-4 w-full">
         {/* 1. Clock (~20%) */}
         <div className="w-full md:w-[20%] flex justify-center md:justify-start">
           <Clock />
         </div>
         
-        {/* 2. Recommendation (~35%) - Placeholder for Phase B */}
-        <div className="w-full md:w-[35%] bg-brand-dark p-4 rounded-xl border border-brand-900/30 flex items-center justify-center">
-          <span className="text-brand-light/50 text-sm">Recommendation (Phase B)</span>
+        {/* 2. Recommendation (~35%) */}
+        <div className="w-full md:w-[35%] ">
+          <BacklogWidget onTaskAdded={refetch} />
         </div>
         
         {/* 3. Time-Spent (~20%) - Placeholder for Phase C */}
@@ -144,4 +145,6 @@ export default function Dashboard() {
     </div>
   )
 }
+
+
 
