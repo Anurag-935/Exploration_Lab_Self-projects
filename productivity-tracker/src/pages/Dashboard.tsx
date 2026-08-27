@@ -35,14 +35,26 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Top Row */}
-      <div className="flex flex-col md:flex-row md:items-end gap-6 justify-between">
-        <div>
-          <h2 className="text-sm font-semibold text-brand-500 uppercase tracking-widest mb-2">Today</h2>
+      {/* Top Row: Clock | Recommendation | Time-Spent | Date/Pending */}
+      <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+        {/* 1. Clock (~20%) */}
+        <div className="w-full md:w-[20%] flex justify-center md:justify-start">
           <Clock />
         </div>
-        <div className="flex-1 max-w-2xl">
-          <QuickCapture onCaptured={refetch} />
+        
+        {/* 2. Recommendation (~35%) - Placeholder for Phase B */}
+        <div className="w-full md:w-[35%] bg-brand-dark p-4 rounded-xl border border-brand-900/30 flex items-center justify-center">
+          <span className="text-brand-light/50 text-sm">Recommendation (Phase B)</span>
+        </div>
+        
+        {/* 3. Time-Spent (~20%) - Placeholder for Phase C */}
+        <div className="w-full md:w-[20%] bg-brand-dark p-4 rounded-xl border border-brand-900/30 flex items-center justify-center">
+          <span className="text-brand-light/50 text-sm">Time-Spent (Phase C)</span>
+        </div>
+        
+        {/* 4. Date/Pending (~20%) - Placeholder for Phase D */}
+        <div className="w-full md:w-[20%] bg-brand-dark p-4 rounded-xl border border-brand-900/30 flex items-center justify-center">
+          <span className="text-brand-light/50 text-sm">Date/Pending (Phase D)</span>
         </div>
       </div>
 
@@ -132,3 +144,4 @@ export default function Dashboard() {
     </div>
   )
 }
+
