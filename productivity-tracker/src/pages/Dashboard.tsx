@@ -61,8 +61,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <ConsistencyGraph tasks={tasks} habits={habits} />
-
+      
             {/* Main Content Area */}
       <div className="flex flex-col lg:flex-row gap-8 items-start">
         
@@ -82,6 +81,7 @@ export default function Dashboard() {
     </div>
   )
 }
+
 
 
 
