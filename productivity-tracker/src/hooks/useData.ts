@@ -18,7 +18,7 @@ export function useData() {
       { data: plansData },
       { data: skillsData }
     ] = await Promise.all([
-      supabase.from("tasks").select("*").order("created_at", { ascending: false }),
+      supabase.from("tasks").select("*, task_skills(skills(name))").order("created_at", { ascending: false }),
       supabase.from("habits").select("*").order("created_at", { ascending: false }),
       supabase.from("long_plans").select("*").order("created_at", { ascending: false }),
       supabase.from("skills").select("*").order("created_at", { ascending: false })
@@ -45,4 +45,5 @@ export function useData() {
     refetch: fetchData, lastRefreshed
   }
 }
+
 

@@ -7,6 +7,7 @@ import TimeSpentWidget from "../components/TimeSpentWidget"
 import DatePendingWidget from "../components/DatePendingWidget"
 import QuickCapture from "../components/QuickCapture"
 import ConsistencyGraph from "../components/ConsistencyGraph"
+import MainTaskTable from "../components/MainTaskTable"
 import RadarStats from "../components/RadarStats"
 import Timer from "../components/Timer"
 
@@ -63,93 +64,23 @@ export default function Dashboard() {
 
       <ConsistencyGraph tasks={tasks} habits={habits} />
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Content Area */}
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
         
-        {/* Left Col: Short Tasks */}
-        <div className="lg:col-span-2 space-y-6">
-          <Timer activeTask={activeTaskObj} onStop={refetch} />
-
-          <div className="bg-brand-dark p-6 rounded-xl shadow-lg border border-brand-900/30">
-            <h3 className="font-semibold text-lg text-brand-light mb-4">Pending Tasks</h3>
-            {openTasks.length === 0 ? (
-              <p className="text-brand-light/50 text-sm italic">All caught up!</p>
-            ) : (
-              <ul className="space-y-3">
-                {openTasks.map(task => (
-                  <li key={task.id} className="flex items-start justify-between group py-2 border-b border-brand-900/20 last:border-0">
-                    <div className="flex items-start gap-3 flex-1">
-                      <input 
-                        type="checkbox" 
-                        checked={false} 
-                        onChange={() => handleToggleTask(task.id, task.status)} 
-                        className="mt-1 w-5 h-5 rounded border-brand-900 bg-brand-darker text-brand-500 focus:ring-brand-500 focus:ring-offset-brand-dark cursor-pointer" 
-                      />
-                      <div>
-                        <p className="text-brand-light font-medium">{task.title}</p>
-                        {task.note && <p className="text-sm text-brand-light/60">{task.note}</p>}
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {activeTaskId !== task.id && (
-                        <button 
-                          onClick={() => setActiveTaskId(task.id)}
-                          className="text-xs px-2 py-1 bg-brand-800 text-brand-light rounded hover:bg-brand-500 transition-colors"
-                        >
-                          Focus
-                        </button>
-                      )}
-                      <button onClick={() => handleDeleteTask(task.id)} className="text-xs text-brand-500 hover:text-red-400">Delete</button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          
-          {doneTasks.length > 0 && (
-            <div className="bg-brand-dark/50 p-6 rounded-xl border border-brand-900/20">
-              <h3 className="font-semibold text-sm text-brand-light/50 mb-4 tracking-wider uppercase">Completed Today</h3>
-              <ul className="space-y-2">
-                {doneTasks.slice(0, 5).map(task => (
-                  <li key={task.id} className="flex items-center gap-3 opacity-50 hover:opacity-100 transition-opacity">
-                    <input type="checkbox" checked={true} onChange={() => handleToggleTask(task.id, task.status)} className="w-4 h-4 rounded text-brand-500 bg-brand-darker border-brand-900" />
-                    <span className="line-through text-sm">{task.title}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+        {/* Left Col: Main Task Table (~65%) */}
+        <div className="w-full lg:w-[65%] space-y-6">
+          <Timer activeTask={tasks.find(t => t.id === activeTaskId) || null} onStop={refetch} />
+          <MainTaskTable tasks={tasks as any} refetch={refetch} onFocus={setActiveTaskId} />
         </div>
 
-        {/* Right Col: Stats, Habits */}
-        <div className="space-y-6">
+        {/* Right Col: Radar Chart (~35%) */}
+        <div className="w-full lg:w-[35%] space-y-6">
           <RadarStats skills={skills} />
-
-          <div className="bg-brand-dark p-6 rounded-xl shadow-lg border border-brand-900/30">
-            <h3 className="font-semibold text-brand-light mb-4">Daily Habits</h3>
-            {habits.length === 0 ? (
-              <p className="text-brand-light/50 text-sm">No habits active.</p>
-            ) : (
-              <ul className="space-y-3">
-                {habits.map(habit => (
-                  <li key={habit.id} className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_8px_rgba(177,72,88,0.6)]"></div>
-                    <span className="font-medium text-brand-light">{habit.title}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {/* Calendar heatmap was mentioned not to be touched, so I will leave ConsistencyGraph here if it was here.
+              Wait, in my previous edit, ConsistencyGraph was above the Main Content grid. I will keep it there. */}
         </div>
       </div>
     </div>
   )
 }
-
-
-
-
-
 

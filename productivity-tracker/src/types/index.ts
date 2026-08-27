@@ -8,6 +8,10 @@ export type Skill = {
 }
 
 export type Task = {
+  priority?: number
+  time_estimate?: number
+  exp_value?: number
+  task_type?: string
   id: string
   user_id: string
   title: string
@@ -39,3 +43,4 @@ export type LongPlan = {
   target_date: string | null
   created_at: string
 }
+
