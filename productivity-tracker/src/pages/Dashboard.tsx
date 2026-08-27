@@ -6,10 +6,9 @@ import QuickCapture from "../components/QuickCapture"
 import ConsistencyGraph from "../components/ConsistencyGraph"
 import RadarStats from "../components/RadarStats"
 import Timer from "../components/Timer"
-import { Task } from "../types"
 
 export default function Dashboard() {
-  const { tasks, habits, longPlans, skills, loading, refetch } = useData()
+  const { tasks, habits, skills, loading, refetch } = useData()
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
 
   const handleToggleTask = async (taskId: string, currentStatus: "open" | "done") => {
@@ -141,3 +140,4 @@ export default function Dashboard() {
     </div>
   )
 }
+
