@@ -8,11 +8,13 @@ import DatePendingWidget from "../components/DatePendingWidget"
 import QuickCapture from "../components/QuickCapture"
 import MainTaskTable from "../components/MainTaskTable"
 import RadarStats from "../components/RadarStats"
+import CalendarHeatmap from "../components/CalendarHeatmap"
+import MonthlyLineGraph from "../components/MonthlyLineGraph"
 import Timer from "../components/Timer"
 
 export default function Dashboard() {
   const { tasks, habits, skills, loading, refetch, lastRefreshed } = useData()
-  const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
+  
 
   const handleToggleTask = async (taskId: string, currentStatus: "open" | "done") => {
     await supabase.from("tasks").update({
@@ -65,19 +67,30 @@ export default function Dashboard() {
                   {/* Main Content Area */}
       <div className="flex flex-col gap-8">
         
-        {/* Full width Main Task Table */}
-        <div className="w-full space-y-6">
-          <Timer activeTask={tasks.find(t => t.id === activeTaskId) || null} onStop={refetch} />
-          <MainTaskTable tasks={tasks as any} refetch={refetch} onFocus={setActiveTaskId} />
-        </div>
+              {/* Full width Main Task Table */}
+      <div className="w-full mb-8">
+        <MainTaskTable tasks={tasks as any} refetch={refetch} } />
+      </div>
 
-        {/* Bottom Left: Radar Chart (~35% width, but sits on the left of its row) */}
-        <div className="flex w-full">
-          <div className="w-full md:w-[40%] lg:w-[35%]">
-            <RadarStats tasks={tasks as any} />
-          </div>
+      {/* Radar | Calendar | Timer */}
+      <div className="flex flex-col md:flex-row gap-8 items-stretch mb-8">
+        <div className="w-full md:w-1/3">
+          <RadarStats tasks={tasks as any} />
         </div>
+        <div className="w-full md:w-1/3">
+          <CalendarHeatmap tasks={tasks as any} />
+        </div>
+        <div className="w-full md:w-1/3">
+          <Timer activeTasks={tasks.filter(t => (t.carried_over_count || 0) >= 0 && t.status === "open")} onStop={refetch} />
+        </div>
+      </div>
+
+      {/* Line Graph */}
+      <div className="w-full">
+        <MonthlyLineGraph tasks={tasks as any} />
       </div>
     </div>
   )
 }
+
+

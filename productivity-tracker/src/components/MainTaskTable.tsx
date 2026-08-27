@@ -9,7 +9,8 @@ type TaskWithSkills = Task & {
   task_skills?: { skills: { name: string } }[]
 }
 
-export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: TaskWithSkills[], refetch: () => void, onFocus: (id: string) => void }) {
+export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkills[], refetch: () => void,  }) {
+  const activeTasks = tasks.filter(t => (t.carried_over_count || 0) >= 0)
   const [editingTask, setEditingTask] = useState<TaskWithSkills | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -157,7 +158,7 @@ export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: Task
             </tr>
           </thead>
           <tbody>
-            {tasks.map((task, i) => {
+            {activeTasks.map((task, i) => {
               const sNames = task.task_skills?.map(ts => ts.skills?.name).filter(Boolean) || []
               return (
                 <tr 
@@ -190,7 +191,7 @@ export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: Task
                 </tr>
               )
             })}
-            {tasks.length === 0 && (
+            {activeTasks.length === 0 && (
               <tr>
                 <td colSpan={8} className="text-center py-8 text-brand-light/50 italic">No tasks found. Add one below.</td>
               </tr>
@@ -291,6 +292,8 @@ export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: Task
     </div>
   )
 }
+
+
 
 
 
