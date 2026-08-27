@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { supabase } from "../lib/supabase"
 import { Task } from "../types"
-import { X } from "lucide-react"
+import { X, Trash2 } from "lucide-react"
 
 const PREDEFINED_SKILLS = ["Technical", "Communication", "Creativity", "Discipline", "Learning", "Wellness"]
 
@@ -58,6 +58,17 @@ export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: Task
       status: currentStatus === "open" ? "done" : "open",
       completed_at: currentStatus === "open" ? new Date().toISOString() : null
     }).eq("id", taskId)
+    refetch()
+  }
+
+    const handleDeleteTask = async () => {
+    if (!editingTask) return
+    if (!window.confirm("Are you sure you want to delete this task? This cannot be undone.")) return
+    
+    setLoading(true)
+    await supabase.from("tasks").delete().eq("id", editingTask.id)
+    setEditingTask(null)
+    setLoading(false)
     refetch()
   }
 
@@ -258,11 +269,20 @@ export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: Task
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-brand-900/50">
-                <button type="button" onClick={() => { setEditingTask(null); setShowAddModal(false) }} className="px-4 py-2 text-brand-light/70 hover:text-brand-light">Cancel</button>
-                <button type="submit" disabled={loading} className="px-6 py-2 bg-brand-500 hover:bg-brand-700 text-brand-light rounded font-medium disabled:opacity-50">
-                  {loading ? "Saving..." : "Save Task"}
-                </button>
+                            <div className="flex justify-between items-center pt-4 border-t border-brand-900/50">
+                <div>
+                  {editingTask && (
+                    <button type="button" onClick={handleDeleteTask} className="flex items-center gap-2 px-3 py-2 text-brand-500 hover:bg-brand-500/10 rounded font-medium transition-colors">
+                      <Trash2 size={16} /> Delete
+                    </button>
+                  )}
+                </div>
+                <div className="flex gap-3">
+                  <button type="button" onClick={() => { setEditingTask(null); setShowAddModal(false) }} className="px-4 py-2 text-brand-light/70 hover:text-brand-light">Cancel</button>
+                  <button type="submit" disabled={loading} className="px-6 py-2 bg-brand-500 hover:bg-brand-700 text-brand-light rounded font-medium disabled:opacity-50">
+                    {loading ? "Saving..." : "Save Task"}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
@@ -271,6 +291,7 @@ export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: Task
     </div>
   )
 }
+
 
 
 
