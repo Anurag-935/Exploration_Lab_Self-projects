@@ -132,17 +132,17 @@ export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: Task
       <h3 className="font-semibold text-lg text-brand-light mb-4">Main Tasks</h3>
       
       <div className="flex-1 overflow-auto mb-4">
-        <table className="w-full text-left border-collapse">
+        <table className="w-full text-left border-collapse border border-brand-900/30 table-auto">
           <thead>
-            <tr className="border-b border-brand-900/50 text-brand-light/50 text-xs uppercase tracking-wider">
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">Priority</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">Title</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">Est. Time</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">EXP</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">Skills</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">Type</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50">Description</th>
-              <th className="py-2 px-3 text-center">Done</th><th className="py-2 px-3 text-center">Action</th>
+            <tr className="border-b border-brand-900/30 text-brand-light/50 text-xs uppercase tracking-wider">
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Priority</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Title</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Est. Time</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">EXP</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Skills</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Type</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Description</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 text-center">Check Box</th>
             </tr>
           </thead>
           <tbody>
@@ -154,20 +154,20 @@ export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: Task
                   onClick={() => openEdit(task)}
                   className="border-b border-brand-900/20 hover:bg-brand-darker transition-colors cursor-pointer group"
                 >
-                  <td className="py-4 px-4 border-r border-brand-900/10">{renderPriority(task.priority || 3)}</td>
-                  <td className="py-4 px-4 border-r border-brand-900/10 font-semibold text-brand-light text-base">{task.title}</td>
-                  <td className="py-4 px-4 border-r border-brand-900/10 text-brand-light/70">{task.time_estimate || 0}m</td>
-                  <td className="py-4 px-4 border-r border-brand-900/10 text-brand-500 font-bold text-lg">+{task.exp_value || 0}</td>
-                  <td className="py-4 px-4 border-r border-brand-900/10">
+                  <td className="py-4 px-4 border-r border-brand-900/30">{renderPriority(task.priority || 3)}</td>
+                  <td className="py-4 px-4 border-r border-brand-900/30 font-semibold text-brand-light text-base">{task.title}</td>
+                  <td className="py-4 px-4 border-r border-brand-900/30 text-brand-light/70">{task.time_estimate || 0}m</td>
+                  <td className="py-4 px-4 border-r border-brand-900/30 text-brand-500 font-bold text-lg">+{task.exp_value || 0}</td>
+                  <td className="py-4 px-4 border-r border-brand-900/30">
                     <div className="flex flex-wrap gap-1">
                       {sNames.length > 0 ? sNames.map(s => (
                         <span key={s} className="px-1.5 py-0.5 bg-brand-900/30 text-brand-500 text-[10px] rounded uppercase">{s}</span>
                       )) : <span className="text-brand-light/30 text-xs">-</span>}
                     </div>
                   </td>
-                  <td className="py-4 px-4 border-r border-brand-900/10 text-xs font-medium text-brand-light/70 uppercase tracking-wide">{task.task_type || "Short Task"}</td>
-                  <td className="py-4 px-4 border-r border-brand-900/10 text-sm text-brand-light/60 max-w-[250px]">{task.note || "-"}</td>
-                  <td className="py-4 px-4 border-r border-brand-900/10 text-center">
+                  <td className="py-4 px-4 border-r border-brand-900/30 text-xs font-medium text-brand-light/70 uppercase tracking-wide">{task.task_type || "Short Task"}</td>
+                  <td className="py-4 px-4 border-r border-brand-900/30 text-sm text-brand-light/60 whitespace-normal break-words">{task.note || "-"}</td>
+                  <td className="py-4 px-4 border-r border-brand-900/30 text-center">
                     <input 
                       type="checkbox" 
                       checked={task.status === "done"} 
@@ -271,6 +271,9 @@ export default function MainTaskTable({ tasks, refetch, onFocus }: { tasks: Task
     </div>
   )
 }
+
+
+
 
 
 
