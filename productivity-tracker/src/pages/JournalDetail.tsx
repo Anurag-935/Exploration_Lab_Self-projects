@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { supabase } from "../lib/supabase"
+import RatingGauge from "../components/RatingGauge"
 
 type JournalEntry = {
   id: string
@@ -45,8 +46,8 @@ export default function JournalDetail() {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden relative">
         {entry.rating && (
-          <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-yellow-400 border-2 border-yellow-500 flex items-center justify-center text-yellow-900 font-bold shadow-md z-10">
-            {entry.rating}
+          <div className="absolute top-4 right-4 z-10 scale-125 origin-top-right">
+            <RatingGauge rating={entry.rating} />
           </div>
         )}
         
@@ -69,3 +70,4 @@ export default function JournalDetail() {
     </div>
   )
 }
+

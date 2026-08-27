@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { supabase } from "../lib/supabase"
 import ImageCropper from "../components/ImageCropper"
+import { Trash2 } from "lucide-react"
+import RatingGauge from "../components/RatingGauge"
 
 type JournalEntry = {
   id: string
@@ -260,8 +262,8 @@ export default function JournalGallery() {
               >
                 {/* Rating Badge */}
                 {entry.rating && (
-                  <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-yellow-400 border-2 border-yellow-500 flex items-center justify-center text-yellow-900 text-sm font-bold shadow-sm z-10">
-                    {entry.rating}
+                  <div className="absolute top-3 right-3 z-10">
+                    <RatingGauge rating={entry.rating} />
                   </div>
                 )}
                 
@@ -271,7 +273,7 @@ export default function JournalGallery() {
                   className="absolute top-3 left-3 w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all shadow-sm z-10"
                   title="Delete Note"
                 >
-                  ×
+                  <Trash2 size={16} />
                 </button>
 
                 <div className="h-32 bg-gray-50 relative shrink-0 border-b border-gray-100">
@@ -300,3 +302,4 @@ export default function JournalGallery() {
     </div>
   )
 }
+
