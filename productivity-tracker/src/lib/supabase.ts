@@ -7,7 +7,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error("Missing Supabase environment variables.")
 }
 
-// Fix common URL mistakes (like including /rest/v1/ at the end)
 if (supabaseUrl) {
   supabaseUrl = supabaseUrl.replace(/\/rest\/v1\/?$/, "")
   if (supabaseUrl.endsWith("/")) {
@@ -15,4 +14,11 @@ if (supabaseUrl) {
   }
 }
 
-export const supabase = createClient(supabaseUrl || "", supabaseAnonKey || "")
+export const supabase = createClient(supabaseUrl || "", supabaseAnonKey || "", {
+  auth: {
+    persistSession: true,
+    storageKey: 'productivity-tracker-auth',
+    storage: window.localStorage,
+    autoRefreshToken: true,
+  }
+})
