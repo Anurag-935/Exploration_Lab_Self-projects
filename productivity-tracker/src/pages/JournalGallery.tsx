@@ -134,7 +134,7 @@ export default function JournalGallery() {
         {!isCreating && (
           <button 
             onClick={() => setIsCreating(true)}
-            className="px-4 py-2 bg-brand-700 text-white rounded font-medium hover:bg-brand-500 text-sm shadow-sm"
+            className="px-4 py-2 bg-brand-500 text-brand-light rounded font-medium hover:bg-brand-700 hover:text-brand-light text-sm shadow-sm"
           >
             New Note
           </button>
@@ -230,7 +230,7 @@ export default function JournalGallery() {
               <button 
                 type="submit" 
                 disabled={uploading || !summary}
-                className="px-6 py-2.5 bg-brand-700 text-white rounded-lg font-medium hover:bg-brand-500 disabled:opacity-50 transition-colors shadow-sm"
+                className="px-6 py-2.5 bg-brand-500 text-brand-light rounded-lg font-medium hover:bg-brand-700 hover:text-brand-light disabled:opacity-50 transition-colors shadow-sm"
               >
                 {uploading ? "Saving..." : "Save Note"}
               </button>
@@ -244,7 +244,7 @@ export default function JournalGallery() {
           <div className="w-16 h-16 bg-brand-900/20 text-brand-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">??</div>
           <p className="text-brand-light font-medium mb-1">No notes yet</p>
           <p className="text-sm text-brand-light/50 mb-6 max-w-sm mx-auto">Click "New Note" to write your first reflection. It will appear here as a card.</p>
-          <button onClick={() => setIsCreating(true)} className="px-5 py-2 bg-brand-700 text-white rounded-lg font-medium hover:bg-brand-500 text-sm shadow-sm">
+          <button onClick={() => setIsCreating(true)} className="px-5 py-2 bg-brand-500 text-brand-light rounded-lg font-medium hover:bg-brand-700 hover:text-brand-light text-sm shadow-sm">
             Write First Note
           </button>
         </div>
@@ -302,6 +302,7 @@ export default function JournalGallery() {
     </div>
   )
 }
+
 
 
 

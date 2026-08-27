@@ -6,7 +6,7 @@ export default function MainLayout() {
   
   return (
     <div className="min-h-screen flex flex-col font-sans">
-      <header className="bg-brand-dark shadow-md border-b border-brand-900/50 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+      <header className="bg-brand-dark shadow-md border-b border-brand-900/50 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
         <div className="flex items-center gap-8">
           <h1 className="text-xl font-bold tracking-tight text-brand-light">Productivity Tracker</h1>
           <nav className="hidden sm:flex gap-6">
@@ -27,3 +27,4 @@ export default function MainLayout() {
     </div>
   )
 }
+

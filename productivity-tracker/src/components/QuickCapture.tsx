@@ -56,7 +56,7 @@ export default function QuickCapture({ onCaptured }: Props) {
         <button 
           type="submit" 
           disabled={loading || !text.trim()}
-          className="px-6 py-2 bg-brand-700 text-white rounded-lg font-medium hover:bg-brand-500 disabled:opacity-50"
+          className="px-6 py-2 bg-brand-500 text-brand-light rounded-lg font-medium hover:bg-brand-700 hover:text-brand-light disabled:opacity-50"
         >
           Capture
         </button>
@@ -64,6 +64,7 @@ export default function QuickCapture({ onCaptured }: Props) {
     </div>
   )
 }
+
 
 
 

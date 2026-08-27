@@ -51,7 +51,7 @@ export default function Auth() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-2 font-medium text-white bg-brand-700 rounded hover:bg-brand-500 disabled:opacity-50"
+            className="w-full px-4 py-2 font-medium text-brand-light bg-brand-500 rounded hover:bg-brand-700 disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
@@ -60,5 +60,6 @@ export default function Auth() {
     </div>
   )
 }
+
 
 
