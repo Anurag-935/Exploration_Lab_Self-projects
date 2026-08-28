@@ -11,18 +11,25 @@ type Props = {
 export default function Timer({ activeTasks, onStop }: Props) {
   const [selectedTaskId, setSelectedTaskId] = useState<string>("")
   const [isRunning, setIsRunning] = useState(false)
+  
+  // Real-time tracking
+  const [accumulated, setAccumulated] = useState(0)
+  const [sessionStart, setSessionStart] = useState<number | null>(null)
   const [elapsed, setElapsed] = useState(0)
   const [startTime, setStartTime] = useState<Date | null>(null)
 
   useEffect(() => {
     let interval: any
-    if (isRunning) {
+    if (isRunning && sessionStart) {
+      // Use system time to prevent drifting when the tab is backgrounded
       interval = setInterval(() => {
-        setElapsed(prev => prev + 1)
-      }, 1000)
+        const now = Date.now()
+        const currentSessionSeconds = Math.floor((now - sessionStart) / 1000)
+        setElapsed(accumulated + currentSessionSeconds)
+      }, 500)
     }
     return () => clearInterval(interval)
-  }, [isRunning])
+  }, [isRunning, sessionStart, accumulated])
 
   const handleStart = () => {
     if (!selectedTaskId) {
@@ -30,34 +37,49 @@ export default function Timer({ activeTasks, onStop }: Props) {
       return
     }
     if (!startTime) setStartTime(new Date())
+    setSessionStart(Date.now())
     setIsRunning(true)
   }
 
   const handlePause = () => {
+    if (sessionStart) {
+      const currentSessionSeconds = Math.floor((Date.now() - sessionStart) / 1000)
+      setAccumulated(prev => prev + currentSessionSeconds)
+    }
     setIsRunning(false)
+    setSessionStart(null)
   }
 
   const handleStop = async () => {
     if (!selectedTaskId || !startTime) return
+    
+    let finalElapsed = accumulated
+    if (isRunning && sessionStart) {
+      finalElapsed += Math.floor((Date.now() - sessionStart) / 1000)
+    }
+    
     setIsRunning(false)
+    setSessionStart(null)
     
     // Write to time_logs
     await supabase.from("time_logs").insert({
       task_id: selectedTaskId,
       start_time: startTime.toISOString(),
       end_time: new Date().toISOString(),
-      duration_seconds: elapsed
+      duration_seconds: finalElapsed
     })
 
     setElapsed(0)
+    setAccumulated(0)
     setStartTime(null)
     onStop()
   }
 
   const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60).toString().padStart(2, "0")
+    const h = Math.floor(secs / 3600)
+    const m = Math.floor((secs % 3600) / 60).toString().padStart(2, "0")
     const s = (secs % 60).toString().padStart(2, "0")
-    return `${m}:${s}`
+    return h > 0 ? `${h}:${m}:${s}` : `${m}:${s}`
   }
 
   return (
