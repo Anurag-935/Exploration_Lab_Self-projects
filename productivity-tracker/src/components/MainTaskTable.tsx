@@ -7,12 +7,20 @@ const PREDEFINED_SKILLS = ["Technical", "Communication", "Creativity", "Discipli
 
 type TaskWithSkills = Task & {
   task_skills?: { skills: { name: string } }[]
+  time_logs?: { duration_seconds: number }[]
 }
 
 export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkills[], refetch: () => void,  }) {
     const activeTasks = tasks.filter(t => {
     if ((t.carried_over_count || 0) < 0) return false // hidden if rolled over
-    if (t.task_type === "Short Task" && t.status === "done") return false // short tasks disappear when completed
+    if (t.task_type === "Short Task" && t.status === "done") {
+      if (t.completed_at) {
+        // Hide if completed before today
+        const completedStr = new Date(t.completed_at).toISOString().split("T")[0]
+        const todayStr = new Date().toISOString().split("T")[0]
+        if (completedStr < todayStr) return false
+      }
+    }
     return true
   })
   const [editingTask, setEditingTask] = useState<TaskWithSkills | null>(null)
@@ -153,7 +161,7 @@ export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkill
             <tr className="border-b border-brand-900/30 text-brand-light/50 text-xs uppercase tracking-wider">
               <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Priority</th>
               <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Title</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Est. Time</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Time Taken</th>
               <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">EXP</th>
               <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Skills</th>
               <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Type</th>
@@ -167,12 +175,24 @@ export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkill
               return (
                 <tr 
                   key={task.id} 
-                  onClick={() => openEdit(task)}
-                  className="border-b border-brand-900/20 hover:bg-brand-darker transition-colors cursor-pointer group"
+                  onClick={() => { if(task.status !== 'done') openEdit(task) }}
+                  className={`border-b border-brand-900/20 transition-colors group ${task.status === 'done' ? 'opacity-40 bg-brand-darker/20' : 'hover:bg-brand-darker cursor-pointer'}`}
                 >
                   <td className="py-4 px-4 border-r border-brand-900/30">{renderPriority(task.priority || 3)}</td>
                   <td className="py-4 px-4 border-r border-brand-900/30 font-semibold text-brand-light text-base">{task.title}</td>
-                  <td className="py-4 px-4 border-r border-brand-900/30 text-brand-light/70">{task.time_estimate || 0}m</td>
+                  <td className="py-4 px-4 border-r border-brand-900/30 text-brand-light/70">
+                  {(() => {
+                    if (!task.time_logs || task.time_logs.length === 0) return "-"
+                    const totalSecs = task.time_logs.reduce((sum, log) => sum + (log.duration_seconds || 0), 0)
+                    if (totalSecs === 0) return "-"
+                    const h = Math.floor(totalSecs / 3600)
+                    const m = Math.floor((totalSecs % 3600) / 60)
+                    const s = totalSecs % 60
+                    if (h > 0) return `${h}h ${m}m`
+                    if (m > 0) return `${m}m`
+                    return `${s}s`
+                  })()}
+                </td>
                   <td className="py-4 px-4 border-r border-brand-900/30 text-brand-500 font-bold text-lg">+{task.exp_value || 0}</td>
                   <td className="py-4 px-4 border-r border-brand-900/30">
                     <div className="flex flex-wrap gap-1">
@@ -247,10 +267,7 @@ export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkill
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-brand-light/70 mb-1">Time Estimate (mins)</label>
-                  <input type="number" value={timeEst} onChange={e => setTimeEst(Number(e.target.value))} disabled={!!editingTask} min={1} required className="w-full px-3 py-2 bg-brand-darker border border-brand-900/50 rounded text-brand-light outline-none focus:border-brand-500 disabled:opacity-50 disabled:cursor-not-allowed" />
-                </div>
+                
 
                 <div>
                   <label className="block text-sm font-medium text-brand-light/70 mb-1">EXP Reward</label>
