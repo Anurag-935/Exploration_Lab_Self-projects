@@ -9,11 +9,14 @@ import CalendarHeatmap from "../components/CalendarHeatmap"
 import MonthlyLineGraph from "../components/MonthlyLineGraph"
 import Timer from "../components/Timer"
 import ProjectsWidget from "../components/ProjectsWidget"
+import ProjectsGallery from "../components/ProjectsGallery"
+import { Project } from "../types"
 import { useState } from "react"
 
 export default function Dashboard() {
   const { tasks, projects, loading, refetch, lastRefreshed } = useData()
   const [showProjectsGallery, setShowProjectsGallery] = useState(false)
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   
   if (loading) return <div className="p-8 text-center text-brand-light/50">Loading your workspace...</div>
 
@@ -67,6 +70,18 @@ export default function Dashboard() {
           <MonthlyLineGraph tasks={tasks as any} />
         </div>
       </div>
+
+      {showProjectsGallery && (
+        <ProjectsGallery 
+          projects={projects || []}
+          onClose={() => setShowProjectsGallery(false)}
+          onSelectProject={(p) => {
+            setSelectedProject(p)
+            // Phase C detail view will open here
+            alert("Phase C: Opening details for " + p.title)
+          }}
+        />
+      )}
     </div>
   )
 }
