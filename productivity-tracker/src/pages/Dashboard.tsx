@@ -10,6 +10,7 @@ import MonthlyLineGraph from "../components/MonthlyLineGraph"
 import Timer from "../components/Timer"
 import ProjectsWidget from "../components/ProjectsWidget"
 import ProjectsGallery from "../components/ProjectsGallery"
+import ProjectDetail from "../components/ProjectDetail"
 import { Project } from "../types"
 import { useState } from "react"
 
@@ -60,9 +61,14 @@ export default function Dashboard() {
           <div className="w-full xl:w-1/3">
             <CalendarHeatmap tasks={tasks as any} />
           </div>
-          <div className="w-full xl:w-1/3">
-            <Timer activeTasks={tasks.filter(t => (t.carried_over_count || 0) >= 0 && t.status === "open")} onStop={refetch} />
-          </div>
+          <div className="w-full xl:w-1/3 flex flex-col gap-8">
+              <div className="flex-1">
+                <Timer activeTasks={tasks.filter(t => (t.carried_over_count || 0) >= 0 && t.status === "open")} onStop={refetch} />
+              </div>
+              <div className="flex-1">
+                <ProjectsWidget projects={projects || []} onClick={() => setShowProjectsGallery(true)} />
+              </div>
+            </div>
         </div>
 
         {/* Line Graph */}
@@ -77,9 +83,20 @@ export default function Dashboard() {
           onClose={() => setShowProjectsGallery(false)}
           onSelectProject={(p) => {
             setSelectedProject(p)
-            // Phase C detail view will open here
-            alert("Phase C: Opening details for " + p.title)
+            setShowProjectsGallery(false)
+            setSelectedProject(p)
           }}
+        />
+      )}
+
+      {selectedProject && (
+        <ProjectDetail
+          project={selectedProject}
+          onClose={() => {
+            setSelectedProject(null)
+            setShowProjectsGallery(true)
+          }}
+          onUpdated={refetch}
         />
       )}
     </div>
