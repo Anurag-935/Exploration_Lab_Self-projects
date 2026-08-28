@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { supabase } from "../lib/supabase"
 import { Task } from "../types"
-import { Trash2, X } from "lucide-react"
+import { Trash2, X, ArrowRight } from "lucide-react"
 
 type BacklogItem = {
   id: string
@@ -45,6 +45,20 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
     setShowAddModal(true)
   }
 
+  const [recIndex, setRecIndex] = useState(0)
+  const [fade, setFade] = useState(false)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFade(true)
+      setTimeout(() => {
+        setRecIndex(prev => prev + 1)
+        setFade(false)
+      }, 500)
+    }, 15 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [])
+
   const handleConfirmMoveToTable = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!activeItem) return
@@ -57,11 +71,16 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
       user_id: userData.user.id,
       title: activeItem.title,
       note: newTaskNote.trim(),
-      status: "open"
+      status: "open",
+      task_type: "Short Task"
     })
 
     // Delete from backlog
-    await supabase.from("backlog_tasks").delete().eq("id", activeItem.id)
+    if (!activeItem.id.startsWith("new-")) {
+      await supabase.from("backlog_tasks").delete().eq("id", activeItem.id)
+    }
+
+    setLocalBacklog(prev => prev.filter(b => b.id !== activeItem.id))
 
     setShowAddModal(false)
     setActiveItem(null)
@@ -122,7 +141,7 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
     fetchBacklog()
   }
 
-  const recommendedItem = backlog.length > 0 ? backlog[0] : null
+  const recommendedItem = backlog.length > 0 ? backlog[recIndex % backlog.length] : null
 
   if (loading) return (
     <div className="w-full h-full bg-brand-dark p-4 rounded-xl border border-brand-900/30 flex items-center justify-center">
@@ -140,7 +159,7 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
             <span className="bg-brand-900/30 text-brand-500 px-2 py-0.5 rounded text-[10px]">{backlog.length} Pending Stuff</span>
           </h3>
           {recommendedItem ? (
-            <p className="text-brand-light font-medium line-clamp-2">{recommendedItem.title}</p>
+            <p className={`text-brand-light font-medium line-clamp-2 transition-opacity duration-500 ${fade ? "opacity-0" : "opacity-100"}`}>{recommendedItem.title}</p>
           ) : (
             <p className="text-brand-light/40 text-sm italic">Nothing pending. Add items to capture quick thoughts.</p>
           )}
@@ -237,6 +256,13 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
                     className="flex-1 px-3 py-2 bg-brand-darker border border-transparent hover:border-brand-900/50 focus:border-brand-500 rounded text-brand-light text-sm outline-none transition-colors"
                   />
                   <button 
+                    onClick={() => handleStartMoveToTable(item)}
+                    className="w-8 h-8 flex items-center justify-center text-brand-500/70 hover:text-brand-500 hover:bg-brand-500/10 rounded transition-colors"
+                    title="Add to Table"
+                  >
+                    <ArrowRight size={16} />
+                  </button>
+                  <button 
                     onClick={() => handleLocalDelete(item.id)}
                     className="w-8 h-8 flex items-center justify-center text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded transition-colors"
                     title="Delete"
@@ -257,5 +283,6 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
     </>
   )
 }
+
 
 
