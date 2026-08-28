@@ -30,24 +30,30 @@ export default function RadarStats({ tasks }: Props) {
       }
     })
 
-    let maxVal = 10
+    // CONFIGURABLE CONSTANTS FOR LEVELING
+    // Steeper curve: each level requires noticeably more XP than the last.
+    // L = Math.floor( (XP / BASE)^(1 / EXPONENT) ) + 1
+    const XP_BASE = 100;
+    const XP_EXPONENT = 1.5;
+
+    let maxLevel = 1
     const data = AXES.map(name => {
-      const xp = xpMap[name]
-      if (xp > maxVal) maxVal = xp
+      const xp = xpMap[name] || 0
       
-      // Calculate level (e.g. 100 XP per level)
-      const level = Math.floor(xp / 100) + 1
-      const progress = xp % 100
+      // Calculate level using the exponential threshold curve
+      const levelFloat = Math.pow(xp / XP_BASE, 1 / XP_EXPONENT) + 1
+      const level = Math.floor(levelFloat)
+      
+      if (level > maxLevel) maxLevel = level
 
       return {
         name,
         xp,
-        level,
-        progress
+        level
       }
     })
 
-    return { data, maxVal: Math.max(maxVal, 50) } // Ensure domain is at least 0-50
+    return { data, maxVal: Math.max(maxLevel, 5) } // Ensure domain shows at least up to Level 5
   }, [tasks])
 
   return (
@@ -61,7 +67,7 @@ export default function RadarStats({ tasks }: Props) {
             <PolarAngleAxis dataKey="name" tick={{ fill: '#EFE7DE', fontSize: 10, fontWeight: 600 }} />
             {/* Setting a static domain ensures the hexagon never distorts, even if some values are 0 */}
             <PolarRadiusAxis angle={30} domain={[0, stats.maxVal]} tick={false} axisLine={false} />
-            <Radar name="Level" dataKey="xp" stroke="#B14858" fill="#892535" fillOpacity={0.6} />
+            <Radar name="Level" dataKey="level" stroke="#B14858" fill="#892535" fillOpacity={0.6} />
           </RadarChart>
         </ResponsiveContainer>
       </div>
@@ -73,4 +79,5 @@ export default function RadarStats({ tasks }: Props) {
     </div>
   )
 }
+
 
