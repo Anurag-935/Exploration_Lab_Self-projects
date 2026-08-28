@@ -67,14 +67,18 @@ export default function CalendarHeatmap({ tasks }: { tasks: Task[] }) {
           <div key={`b-${b}`} className="aspect-square rounded-md bg-transparent"></div>
         ))}
         
-        {days.map(d => (
-          <div 
-            key={d} 
-            className={`aspect-square rounded-md border flex items-center justify-center text-xs font-semibold transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-default ${getDayColor(d)}`}
-          >
-            {d}
-          </div>
-        ))}
+        {days.map(d => {
+          const isToday = d === new Date().getDate()
+          const todayStyles = isToday ? "ring-2 ring-white ring-offset-2 ring-offset-brand-dark scale-110 z-10" : ""
+          return (
+            <div 
+              key={d} 
+              className={`aspect-square rounded-md border flex items-center justify-center text-xs font-semibold transition-all duration-300 hover:-translate-y-1 hover:shadow-lg cursor-default ${getDayColor(d)} ${todayStyles}`}
+            >
+              {d}
+            </div>
+          )
+        })}
       </div>
       
       <div className="flex justify-center gap-4 mt-4 text-[10px] text-brand-light/50 uppercase font-medium">
@@ -86,4 +90,5 @@ export default function CalendarHeatmap({ tasks }: { tasks: Task[] }) {
     </div>
   )
 }
+
 
