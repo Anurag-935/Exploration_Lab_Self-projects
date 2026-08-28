@@ -35,7 +35,7 @@ export default function ProjectsGallery({ projects, onClose, onSelectProject }: 
         <div className="flex-1 overflow-y-auto p-6">
           {projects.length === 0 ? (
             <div className="text-center py-20 text-brand-light/40 italic">
-              No projects found. Use SQL to insert test data for now.
+              No projects uploaded yet
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
