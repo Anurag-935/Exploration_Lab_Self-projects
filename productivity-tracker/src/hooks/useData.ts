@@ -49,7 +49,7 @@ export function useData() {
   const [lastRefreshed, setLastRefreshed] = useState(Date.now())
 
   const fetchData = async () => {
-    setLoading(true)
+    if (tasks.length === 0) setLoading(true)
     const [
       { data: tasksData },
       { data: habitsData },

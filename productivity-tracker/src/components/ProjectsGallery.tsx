@@ -1,5 +1,6 @@
 import { X, FolderKanban } from "lucide-react"
 import { Project } from "../types"
+import { createPortal } from "react-dom"
 import ProgressGauge from "./ProgressGauge"
 
 type Props = {
@@ -9,8 +10,8 @@ type Props = {
 }
 
 export default function ProjectsGallery({ projects, onClose, onSelectProject }: Props) {
-  return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-brand-dark rounded-xl w-full max-w-4xl max-h-[80vh] flex flex-col border border-brand-900/50 shadow-2xl overflow-hidden">
         
         {/* Header */}
@@ -69,6 +70,7 @@ export default function ProjectsGallery({ projects, onClose, onSelectProject }: 
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

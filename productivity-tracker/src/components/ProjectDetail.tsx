@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { X, Plus, ChevronDown, ChevronRight, Trash2 } from "lucide-react"
 import { Project, ProjectLog } from "../types"
+import { createPortal } from "react-dom"
 import { supabase } from "../lib/supabase"
 
 const PREDEFINED_SKILLS = ["Technical", "Communication", "Creativity", "Discipline", "Learning", "Wellness"]
@@ -141,8 +142,8 @@ export default function ProjectDetail({ project, onClose, onUpdated }: Props) {
     })
   }
 
-  return (
-    <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-brand-dark rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-brand-900/50 shadow-2xl overflow-hidden">
         
         {/* Header */}
@@ -332,6 +333,7 @@ export default function ProjectDetail({ project, onClose, onUpdated }: Props) {
         )}
 
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

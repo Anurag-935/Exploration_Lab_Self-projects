@@ -12,12 +12,21 @@ import ProjectsWidget from "../components/ProjectsWidget"
 import ProjectsGallery from "../components/ProjectsGallery"
 import ProjectDetail from "../components/ProjectDetail"
 import { Project } from "../types"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export default function Dashboard() {
   const { tasks, projects, loading, refetch, lastRefreshed } = useData()
   const [showProjectsGallery, setShowProjectsGallery] = useState(false)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+
+  useEffect(() => {
+    if (selectedProject && projects) {
+      const updated = projects.find(p => p.id === selectedProject.id)
+      if (updated) {
+        setSelectedProject(updated)
+      }
+    }
+  }, [projects])
   
   if (loading) return <div className="p-8 text-center text-brand-light/50">Loading your workspace...</div>
 
