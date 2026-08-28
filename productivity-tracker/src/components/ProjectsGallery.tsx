@@ -1,4 +1,6 @@
-import { X, FolderKanban } from "lucide-react"
+import { X, FolderKanban, Plus } from "lucide-react"
+import { supabase } from "../lib/supabase"
+import { useState } from "react"
 import { Project } from "../types"
 import { createPortal } from "react-dom"
 import ProgressGauge from "./ProgressGauge"
@@ -7,9 +9,30 @@ type Props = {
   projects: Project[]
   onClose: () => void
   onSelectProject: (p: Project) => void
+  onUpdated: () => void
 }
 
-export default function ProjectsGallery({ projects, onClose, onSelectProject }: Props) {
+export default function ProjectsGallery({ projects, onClose, onSelectProject, onUpdated }: Props) {
+  const [creating, setCreating] = useState(false)
+
+  const handleCreateProject = async () => {
+    setCreating(true)
+    const { data: userData } = await supabase.auth.getUser()
+    if (!userData.user) return
+
+    const { data } = await supabase.from("projects").insert({
+      user_id: userData.user.id,
+      title: "Untitled Project",
+      description: "",
+      progress_percent: 0
+    }).select().single()
+
+    setCreating(false)
+    if (data) {
+      onUpdated()
+      onSelectProject(data)
+    }
+  }
   return createPortal(
     <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-brand-dark rounded-xl w-full max-w-4xl max-h-[80vh] flex flex-col border border-brand-900/50 shadow-2xl overflow-hidden">
@@ -23,12 +46,22 @@ export default function ProjectsGallery({ projects, onClose, onSelectProject }: 
             </h2>
             <p className="text-brand-light/50 text-sm mt-1">Track your technical projects.</p>
           </div>
-          <button 
-            onClick={onClose}
-            className="text-brand-light/50 hover:text-brand-light hover:bg-brand-900/50 p-2 rounded-full transition-all"
-          >
-            <X size={24} />
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleCreateProject}
+              disabled={creating}
+              className="px-4 py-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white rounded text-sm font-medium flex items-center gap-2 transition-colors"
+            >
+              <Plus size={16} />
+              {creating ? "Creating..." : "New Project"}
+            </button>
+            <button 
+              onClick={onClose}
+              className="text-brand-light/50 hover:text-brand-light hover:bg-brand-900/50 p-2 rounded-full transition-all"
+            >
+              <X size={24} />
+            </button>
+          </div>
         </div>
 
         {/* Gallery Grid */}

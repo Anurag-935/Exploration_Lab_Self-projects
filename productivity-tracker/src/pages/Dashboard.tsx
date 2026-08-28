@@ -91,10 +91,10 @@ export default function Dashboard() {
           projects={projects || []}
           onClose={() => setShowProjectsGallery(false)}
           onSelectProject={(p) => {
-            setSelectedProject(p)
             setShowProjectsGallery(false)
             setSelectedProject(p)
           }}
+          onUpdated={refetch}
         />
       )}
 
