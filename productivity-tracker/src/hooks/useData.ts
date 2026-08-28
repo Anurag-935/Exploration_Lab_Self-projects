@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { supabase } from "../lib/supabase"
-import { Task, Habit, LongPlan, Skill } from "../types"
+import { Task, Habit, LongPlan, Skill, Project } from "../types"
 
 // Daily rollover logic
 export const runDailyRollover = async (userId: string) => {
@@ -44,6 +44,7 @@ export function useData() {
   const [habits, setHabits] = useState<Habit[]>([])
   const [longPlans, setLongPlans] = useState<LongPlan[]>([])
   const [skills, setSkills] = useState<Skill[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [lastRefreshed, setLastRefreshed] = useState(Date.now())
 
@@ -53,18 +54,21 @@ export function useData() {
       { data: tasksData },
       { data: habitsData },
       { data: plansData },
-      { data: skillsData }
+      { data: skillsData },
+      { data: projectsData }
     ] = await Promise.all([
       supabase.from("tasks").select("*, task_skills(skills(name)), time_logs(duration_seconds)").order("created_at", { ascending: false }),
       supabase.from("habits").select("*").order("created_at", { ascending: false }),
       supabase.from("long_plans").select("*").order("created_at", { ascending: false }),
-      supabase.from("skills").select("*").order("created_at", { ascending: false })
+      supabase.from("skills").select("*").order("created_at", { ascending: false }),
+      supabase.from("projects").select("*").order("created_at", { ascending: false })
     ])
 
     if (tasksData) setTasks(tasksData)
     if (habitsData) setHabits(habitsData)
     if (plansData) setLongPlans(plansData)
     if (skillsData) setSkills(skillsData)
+    if (projectsData) setProjects(projectsData)
     setLoading(false)
     setLastRefreshed(Date.now())
   }
@@ -84,6 +88,7 @@ export function useData() {
     habits,
     longPlans,
     skills,
+    projects,
     loading,
     refetch: fetchData, lastRefreshed
   }

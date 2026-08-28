@@ -8,9 +8,12 @@ import RadarStats from "../components/RadarStats"
 import CalendarHeatmap from "../components/CalendarHeatmap"
 import MonthlyLineGraph from "../components/MonthlyLineGraph"
 import Timer from "../components/Timer"
+import ProjectsWidget from "../components/ProjectsWidget"
+import { useState } from "react"
 
 export default function Dashboard() {
-  const { tasks, loading, refetch, lastRefreshed } = useData()
+  const { tasks, projects, loading, refetch, lastRefreshed } = useData()
+  const [showProjectsGallery, setShowProjectsGallery] = useState(false)
   
   if (loading) return <div className="p-8 text-center text-brand-light/50">Loading your workspace...</div>
 
