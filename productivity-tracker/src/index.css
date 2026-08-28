@@ -7,3 +7,18 @@
     @apply bg-brand-darker text-brand-light;
   }
 }
+
+@layer utilities {
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 10px 1px rgba(239, 231, 222, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 16px 4px rgba(239, 231, 222, 0.6);
+    }
+  }
+  
+  .today-glow {
+    animation: pulse-glow 2.5s ease-in-out infinite;
+  }
+}
