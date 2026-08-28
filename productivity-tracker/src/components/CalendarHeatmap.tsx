@@ -17,7 +17,9 @@ export default function CalendarHeatmap({ tasks }: { tasks: Task[] }) {
     
     // Group tasks by creation date
     tasks.forEach(t => {
-      const d = new Date(t.created_at)
+      // Group by completed_at if done, otherwise created_at
+      const targetDateStr = (t.status === "done" && t.completed_at) ? t.completed_at : t.created_at
+      const d = new Date(targetDateStr)
       if (d.getMonth() === new Date().getMonth() && d.getFullYear() === new Date().getFullYear()) {
         const dateNum = d.getDate()
         if (!stats[dateNum]) stats[dateNum] = { total: 0, done: 0 }
@@ -84,3 +86,4 @@ export default function CalendarHeatmap({ tasks }: { tasks: Task[] }) {
     </div>
   )
 }
+
