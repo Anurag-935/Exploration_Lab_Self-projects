@@ -11,18 +11,7 @@ type TaskWithSkills = Task & {
 }
 
 export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkills[], refetch: () => void,  }) {
-    const activeTasks = tasks.filter(t => {
-    if ((t.carried_over_count || 0) < 0) return false // hidden if rolled over
-    if (t.task_type === "Short Task" && t.status === "done") {
-      if (t.completed_at) {
-        // Hide if completed before today
-        const completedStr = new Date(t.completed_at).toISOString().split("T")[0]
-        const todayStr = new Date().toISOString().split("T")[0]
-        if (completedStr < todayStr) return false
-      }
-    }
-    return true
-  })
+    const activeTasks = tasks
   const [editingTask, setEditingTask] = useState<TaskWithSkills | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
   const [loading, setLoading] = useState(false)

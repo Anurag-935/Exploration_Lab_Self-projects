@@ -30,6 +30,18 @@ export default function Dashboard() {
   
   if (loading) return <div className="p-8 text-center text-brand-light/50">Loading your workspace...</div>
 
+  const activeTasks = tasks.filter((t: any) => {
+    if ((t.carried_over_count || 0) < 0) return false
+    if (t.task_type === "Short Task" && t.status === "done") {
+      if (t.completed_at) {
+        const completedStr = new Date(t.completed_at).toISOString().split("T")[0]
+        const todayStr = new Date().toISOString().split("T")[0]
+        if (completedStr < todayStr) return false
+      }
+    }
+    return true
+  })
+
   return (
     <div className="space-y-8 pb-12 w-full">
       {/* Top Row: Clock | Recommendation | Time-Spent | Date/Pending */}
@@ -51,7 +63,7 @@ export default function Dashboard() {
         
         {/* 4. Date/Pending (~20%) */}
         <div className="w-full md:w-[20%]">
-          <DatePendingWidget tasks={tasks} />
+          <DatePendingWidget tasks={activeTasks} />
         </div>
       </div>
 
@@ -59,7 +71,7 @@ export default function Dashboard() {
       <div className="flex flex-col gap-8 w-full">
         {/* Full width Main Task Table */}
         <div className="w-full">
-          <MainTaskTable tasks={tasks as any} refetch={refetch} />
+          <MainTaskTable tasks={activeTasks as any} refetch={refetch} />
         </div>
 
         {/* Radar | Calendar | Timer */}
@@ -72,7 +84,7 @@ export default function Dashboard() {
           </div>
           <div className="w-full xl:w-1/3 flex flex-col gap-8">
               <div className="flex-1">
-                <Timer activeTasks={tasks.filter(t => (t.carried_over_count || 0) >= 0 && t.status === "open")} onStop={refetch} />
+                <Timer activeTasks={activeTasks.filter((t: any) => t.status === "open")} onStop={refetch} />
               </div>
               <div className="flex-1">
                 <ProjectsWidget projects={projects || []} onClick={() => setShowProjectsGallery(true)} />

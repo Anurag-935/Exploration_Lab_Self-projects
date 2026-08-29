@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react"
-import { supabase } from "../lib/supabase"
-import { Task, Habit, LongPlan, Skill, Project } from "../types"
+import sys
+import re
 
-// Daily rollover logic
-export const runDailyRollover = async (userId: string) => {
+with open("src/hooks/useData.ts", "r", encoding="utf-8") as f:
+    text = f.read()
+
+pattern = r'export const runDailyRollover = async.*?export function useData\(\) \{'
+
+replacement = """export const runDailyRollover = async (userId: string) => {
   const now = new Date()
   const todayStr = now.toISOString().split("T")[0]
   
@@ -83,63 +86,9 @@ export const runDailyRollover = async (userId: string) => {
   }
 }
 
-export function useData() {
-  const [tasks, setTasks] = useState<Task[]>([])
-  const [habits, setHabits] = useState<Habit[]>([])
-  const [longPlans, setLongPlans] = useState<LongPlan[]>([])
-  const [skills, setSkills] = useState<Skill[]>([])
-  const [projects, setProjects] = useState<Project[]>([])
-  const [loading, setLoading] = useState(true)
-  const [lastRefreshed, setLastRefreshed] = useState(Date.now())
+export function useData() {"""
 
-  const fetchData = async () => {
-    if (tasks.length === 0) setLoading(true)
-    const [
-      { data: tasksData },
-      { data: habitsData },
-      { data: plansData },
-      { data: skillsData },
-      { data: projectsData }
-    ] = await Promise.all([
-      supabase.from("tasks").select("*, task_skills(skills(name)), time_logs(duration_seconds)").order("created_at", { ascending: false }),
-      supabase.from("habits").select("*").order("created_at", { ascending: false }),
-      supabase.from("long_plans").select("*").order("created_at", { ascending: false }),
-      supabase.from("skills").select("*").order("created_at", { ascending: false }),
-      supabase.from("projects").select("*").order("created_at", { ascending: false })
-    ])
+text = re.sub(pattern, replacement, text, flags=re.DOTALL)
 
-    if (tasksData) setTasks(tasksData)
-    if (habitsData) setHabits(habitsData)
-    if (plansData) setLongPlans(plansData)
-    if (skillsData) setSkills(skillsData)
-    if (projectsData) setProjects(projectsData)
-    setLoading(false)
-    setLastRefreshed(Date.now())
-  }
-
-    useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) {
-        runDailyRollover(data.user.id).then(() => fetchData())
-      } else {
-        fetchData()
-      }
-    })
-  }, [])
-
-  return {
-    tasks,
-    habits,
-    longPlans,
-    skills,
-    projects,
-    loading,
-    refetch: fetchData, lastRefreshed
-  }
-}
-
-
-
-
-
-
+with open("src/hooks/useData.ts", "w", encoding="utf-8") as f:
+    f.write(text)
