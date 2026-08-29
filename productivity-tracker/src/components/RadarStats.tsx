@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts"
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from "recharts"
 import { Skill, Task } from "../types"
 
 const AXES = ["Technical", "Communication", "Creativity", "Discipline", "Learning", "Wellness"]
@@ -10,6 +10,20 @@ type TaskWithSkills = Task & {
 
 type Props = {
   tasks: TaskWithSkills[]
+}
+
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload
+    return (
+      <div className="bg-brand-darker border border-brand-900/50 p-3 rounded shadow-xl">
+        <p className="text-brand-500 font-bold mb-1">{data.name}</p>
+        <p className="text-brand-light text-sm">Level: <span className="font-semibold">{data.level}</span></p>
+        <p className="text-brand-light/70 text-xs">Total XP: {data.xp}</p>
+      </div>
+    )
+  }
+  return null
 }
 
 export default function RadarStats({ tasks }: Props) {
@@ -49,7 +63,8 @@ export default function RadarStats({ tasks }: Props) {
       return {
         name,
         xp,
-        level
+        level,
+        displayLevel: levelFloat // use the float for fluid visual growth!
       }
     })
 
@@ -67,7 +82,8 @@ export default function RadarStats({ tasks }: Props) {
             <PolarAngleAxis dataKey="name" tick={{ fill: '#EFE7DE', fontSize: 10, fontWeight: 600 }} />
             {/* Setting a static domain ensures the hexagon never distorts, even if some values are 0 */}
             <PolarRadiusAxis angle={30} domain={[0, stats.maxVal]} tick={false} axisLine={false} />
-            <Radar name="Level" dataKey="level" stroke="#B14858" fill="#892535" fillOpacity={0.6} />
+            <Tooltip content={<CustomTooltip />} />
+            <Radar name="Level" dataKey="displayLevel" stroke="#B14858" fill="#892535" fillOpacity={0.6} />
           </RadarChart>
         </ResponsiveContainer>
       </div>
