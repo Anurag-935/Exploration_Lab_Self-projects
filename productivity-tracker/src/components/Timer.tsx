@@ -9,14 +9,33 @@ type Props = {
 }
 
 export default function Timer({ activeTasks, onStop }: Props) {
- const [selectedTaskId, setSelectedTaskId] = useState<string>("")
- const [isRunning, setIsRunning] = useState(false)
+ const getSaved = () => {
+   const saved = localStorage.getItem("productivityTimer")
+   return saved ? JSON.parse(saved) : {}
+ }
+ const saved = getSaved()
+
+ const [selectedTaskId, setSelectedTaskId] = useState<string>(saved.selectedTaskId || "")
+ const [isRunning, setIsRunning] = useState(saved.isRunning || false)
  
  // Real-time tracking
- const [accumulated, setAccumulated] = useState(0)
- const [sessionStart, setSessionStart] = useState<number | null>(null)
- const [elapsed, setElapsed] = useState(0)
- const [startTime, setStartTime] = useState<Date | null>(null)
+ const [accumulated, setAccumulated] = useState(saved.accumulated || 0)
+ const [sessionStart, setSessionStart] = useState<number | null>(saved.sessionStart || null)
+ const [elapsed, setElapsed] = useState(() => {
+   let initialElapsed = saved.accumulated || 0
+   if (saved.isRunning && saved.sessionStart) {
+     initialElapsed += Math.floor((Date.now() - saved.sessionStart) / 1000)
+   }
+   return initialElapsed
+ })
+ const [startTime, setStartTime] = useState<string | null>(saved.startTime || null)
+
+ useEffect(() => {
+   localStorage.setItem("productivityTimer", JSON.stringify({
+     selectedTaskId, isRunning, accumulated, sessionStart, startTime
+   }))
+ }, [selectedTaskId, isRunning, accumulated, sessionStart, startTime])
+
 
  useEffect(() => {
  let interval: any
@@ -36,7 +55,7 @@ export default function Timer({ activeTasks, onStop }: Props) {
  alert("Please select a task to focus on first!")
  return
  }
- if (!startTime) setStartTime(new Date())
+ if (!startTime) setStartTime(new Date().toISOString())
  setSessionStart(Date.now())
  setIsRunning(true)
  }
@@ -64,7 +83,7 @@ export default function Timer({ activeTasks, onStop }: Props) {
  // Write to time_logs
  await supabase.from("time_logs").insert({
  task_id: selectedTaskId,
- start_time: startTime.toISOString(),
+ start_time: startTime,
  end_time: new Date().toISOString(),
  duration_seconds: finalElapsed
  })
