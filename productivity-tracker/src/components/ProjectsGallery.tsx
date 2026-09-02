@@ -35,10 +35,10 @@ export default function ProjectsGallery({ projects, onClose, onSelectProject, on
   }
   return createPortal(
     <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-brand-dark rounded-xl w-full max-w-4xl max-h-[80vh] flex flex-col border border-brand-900/50 shadow-2xl overflow-hidden">
+      <div className="bg-brand-dark rounded-xl w-full max-w-4xl max-h-[80vh] flex flex-col border-2 border-brand-900 shadow-neo overflow-hidden">
         
         {/* Header */}
-        <div className="p-6 border-b border-brand-900/50 flex justify-between items-center bg-brand-darker/50">
+        <div className="p-6 border-b-2 border-brand-900 flex justify-between items-center bg-brand-darker/50 shadow-neo-input">
           <div>
             <h2 className="text-xl font-bold text-brand-light flex items-center gap-3">
               <FolderKanban className="text-brand-500" />
@@ -47,17 +47,12 @@ export default function ProjectsGallery({ projects, onClose, onSelectProject, on
             <p className="text-brand-light/50 text-sm mt-1">Track your technical projects.</p>
           </div>
           <div className="flex items-center gap-4">
-            <button
-              onClick={handleCreateProject}
-              disabled={creating}
-              className="px-4 py-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white rounded text-sm font-medium flex items-center gap-2 transition-colors"
+            <button onClick={handleCreateProject} disabled={creating} className="px-4 py-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white rounded text-sm font-medium flex items-center gap-2 transition-colors border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
             >
               <Plus size={16} />
               {creating ? "Creating..." : "New Project"}
             </button>
-            <button 
-              onClick={onClose}
-              className="text-brand-light/50 hover:text-brand-light hover:bg-brand-900/50 p-2 rounded-full transition-all"
+            <button onClick={onClose} className="text-brand-light/50 hover:text-brand-light hover:bg-brand-900/50 p-2 rounded-full transition-all border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
             >
               <X size={24} />
             </button>
@@ -76,7 +71,7 @@ export default function ProjectsGallery({ projects, onClose, onSelectProject, on
                 <div 
                   key={project.id}
                   onClick={() => onSelectProject(project)}
-                  className="bg-brand-darker border border-brand-900/50 rounded-xl p-5 hover:border-brand-500 hover:-translate-y-1 transition-all cursor-pointer group shadow-sm hover:shadow-brand-500/10 flex flex-col h-full"
+                  className="bg-brand-darker border-2 border-brand-900 rounded-xl p-5 hover:border-brand-500 hover:-translate-y-1 transition-all cursor-pointer group shadow-neo hover:shadow-brand-500/10 flex flex-col h-full"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="font-semibold text-brand-light text-lg leading-tight group-hover:text-brand-500 transition-colors flex-1 pr-4">{project.title}</h3>
@@ -88,7 +83,7 @@ export default function ProjectsGallery({ projects, onClose, onSelectProject, on
                     {project.description || "No description provided."}
                   </p>
                   
-                  <div className="mt-4 pt-4 border-t border-brand-900/30 flex justify-between items-center">
+                  <div className="mt-4 pt-4 border-t-2 border-brand-900 flex justify-between items-center">
                     <span className="text-[10px] text-brand-light/40 uppercase tracking-widest font-semibold">
                       {project.progress_percent === 100 ? "Done" : project.progress_percent === 0 ? "Pending" : "Active"}
                     </span>

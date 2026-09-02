@@ -32,13 +32,12 @@ export default function QuickCapture({ onCaptured }: Props) {
   }
 
   return (
-    <div className="bg-brand-dark p-4 rounded-xl shadow-sm border border-brand-900/30">
+    <div className="bg-brand-dark p-4 rounded-xl shadow-neo border-2 border-brand-900">
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
         <select 
           value={type} 
           onChange={(e) => setType(e.target.value as any)}
-          className="px-3 py-2 border border-brand-900/50 rounded-lg bg-brand-darker text-brand-light focus:ring-2 focus:ring-brand-500/50 outline-none"
-        >
+          className="px-3 py-2 border-2 border-brand-900 rounded-lg bg-brand-darker text-brand-light focus:ring-2 focus:ring-brand-500/50 outline-none shadow-neo-input">
           <option value="task">Short Task</option>
           <option value="habit">Habit</option>
           <option value="plan">Long Plan</option>
@@ -48,15 +47,12 @@ export default function QuickCapture({ onCaptured }: Props) {
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="flex-1 px-4 py-2 bg-brand-darker text-brand-light border border-brand-900/50 rounded-lg focus:ring-2 focus:ring-brand-500/50 outline-none"
+          className="flex-1 px-4 py-2 bg-brand-darker text-brand-light border-2 border-brand-900 rounded-lg focus:ring-2 focus:ring-brand-500/50 outline-none shadow-neo"
           placeholder={`Add a new ${type}...`}
           autoFocus
         />
         
-        <button 
-          type="submit" 
-          disabled={loading || !text.trim()}
-          className="px-6 py-2 bg-brand-500 text-brand-light rounded-lg font-medium hover:bg-brand-700 hover:text-brand-light disabled:opacity-50"
+        <button type="submit" disabled={loading || !text.trim()} className="px-6 py-2 bg-brand-500 text-brand-light rounded-lg font-medium hover:bg-brand-700 hover:text-brand-light disabled:opacity-50 border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
         >
           Capture
         </button>

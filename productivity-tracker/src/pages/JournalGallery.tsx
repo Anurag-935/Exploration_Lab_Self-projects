@@ -134,7 +134,7 @@ export default function JournalGallery() {
         {!isCreating && (
           <button 
             onClick={() => setIsCreating(true)}
-            className="px-4 py-2 bg-brand-500 text-brand-light rounded font-medium hover:bg-brand-700 hover:text-brand-light text-sm shadow-sm"
+            className="px-4 py-2 bg-brand-500 text-brand-light rounded font-medium hover:bg-brand-700 hover:text-brand-light text-sm shadow-neo border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
           >
             New Note
           </button>
@@ -142,7 +142,7 @@ export default function JournalGallery() {
       </div>
 
       {isCreating && (
-        <div className="bg-brand-dark p-6 rounded-xl shadow-sm border border-brand-900/30 mb-8">
+        <div className="bg-brand-dark p-6 rounded-xl shadow-neo border-2 border-brand-900 mb-8">
           <h3 className="font-semibold mb-6 text-lg">Write a new note</h3>
           <form onSubmit={handleCreate} className="space-y-6">
             
@@ -152,7 +152,7 @@ export default function JournalGallery() {
                 <label className="block text-sm font-medium mb-2">Cover Image (Optional)</label>
                 <div 
                   onClick={() => fileInputRef.current?.click()}
-                  className={`w-full h-32 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer overflow-hidden transition-colors ${previewUrl ? 'border-transparent' : 'border-brand-900/40 hover:border-brand-500 bg-brand-darker/50 hover:bg-brand-900/20'}`}
+                  className={`w-full h-32 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer overflow-hidden transition-colors ${previewUrl ? 'border-transparent' : 'border-brand-900 hover:border-brand-500 bg-brand-darker/50 hover:bg-brand-900/20'}`}
                 >
                   {previewUrl ? (
                     <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
@@ -163,15 +163,10 @@ export default function JournalGallery() {
                     </div>
                   )}
                 </div>
-                <input 
-                  type="file" 
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={handleFileSelect}
-                  className="hidden"
+                <input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileSelect} className="hidden shadow-[2px_2px_0px_#000000] border-2 border-brand-900 shadow-[2px_2px_0px_#000000]  border-2 border-brand-900 shadow-neo-input "
                 />
                 {previewUrl && (
-                  <button type="button" onClick={(e) => { e.stopPropagation(); setPreviewUrl(null); setCroppedBlob(null); }} className="text-xs text-red-500 mt-2 hover:underline">
+                  <button type="button" onClick={(e) => { e.stopPropagation(); setPreviewUrl(null); setCroppedBlob(null); }} className="text-xs text-red-500 mt-2 hover:underline border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">
                     Remove Image
                   </button>
                 )}
@@ -187,7 +182,7 @@ export default function JournalGallery() {
                         key={num}
                         type="button"
                         onClick={() => setRating(num)}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${rating === num ? 'bg-yellow-400 text-yellow-900 border-2 border-yellow-500 shadow-md scale-110' : 'bg-brand-darker text-brand-light/40 hover:bg-brand-dark'}`}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${rating === num ? 'bg-yellow-400 text-yellow-900 border-2 border-yellow-500 shadow-neo scale-110' : 'bg-brand-darker text-brand-light/40 hover:bg-brand-dark'}`}
                       >
                         {num}
                       </button>
@@ -196,12 +191,12 @@ export default function JournalGallery() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Summary (1-2 lines)</label>
+                  <label className="block text-sm font-medium mb-1 border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">Summary (1-2 lines)</label>
                   <input 
                     type="text" 
                     value={summary}
                     onChange={(e) => setSummary(e.target.value)}
-                    className="w-full px-4 py-2 bg-brand-darker text-brand-light border border-brand-900/50 rounded-lg focus:ring-2 focus:ring-brand-900 focus:border-brand-500 outline-none transition-all"
+                    className="w-full px-4 py-2 bg-brand-darker text-brand-light border-2 border-brand-900 rounded-lg focus:ring-2 focus:ring-brand-900 focus:border-brand-500 outline-none transition-all shadow-neo"
                     placeholder="What happened today?"
                     required
                   />
@@ -215,7 +210,7 @@ export default function JournalGallery() {
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 placeholder="Write your detailed thoughts here..."
-                className="w-full px-4 py-3 bg-brand-darker text-brand-light border border-brand-900/50 rounded-lg h-40 focus:ring-2 focus:ring-brand-900 focus:border-brand-500 outline-none transition-all resize-none"
+                className="w-full px-4 py-3 bg-brand-darker text-brand-light border-2 border-brand-900 rounded-lg h-40 focus:ring-2 focus:ring-brand-900 focus:border-brand-500 outline-none transition-all resize-none shadow-neo"
               />
             </div>
 
@@ -223,14 +218,11 @@ export default function JournalGallery() {
               <button 
                 type="button" 
                 onClick={() => setIsCreating(false)}
-                className="px-5 py-2.5 text-brand-light/70 hover:bg-brand-darker rounded-lg font-medium transition-colors"
+                className="px-5 py-2.5 text-brand-light/70 hover:bg-brand-darker rounded-lg font-medium transition-colors shadow-neo border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
               >
                 Cancel
               </button>
-              <button 
-                type="submit" 
-                disabled={uploading || !summary}
-                className="px-6 py-2.5 bg-brand-500 text-brand-light rounded-lg font-medium hover:bg-brand-700 hover:text-brand-light disabled:opacity-50 transition-colors shadow-sm"
+              <button type="submit" disabled={uploading || !summary} className="px-6 py-2.5 bg-brand-500 text-brand-light rounded-lg font-medium hover:bg-brand-700 hover:text-brand-light disabled:opacity-50 transition-colors border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
               >
                 {uploading ? "Saving..." : "Save Note"}
               </button>
@@ -240,11 +232,11 @@ export default function JournalGallery() {
       )}
 
       {entries.length === 0 && !isCreating ? (
-        <div className="text-center p-16 bg-brand-dark rounded-2xl border-2 border-brand-900/30 border-dashed">
+        <div className="text-center p-16 bg-brand-dark rounded-2xl border-2 border-brand-900 border-dashed shadow-neo">
           <div className="w-16 h-16 bg-brand-900/20 text-brand-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">??</div>
           <p className="text-brand-light font-medium mb-1">No notes yet</p>
           <p className="text-sm text-brand-light/50 mb-6 max-w-sm mx-auto">Click "New Note" to write your first reflection. It will appear here as a card.</p>
-          <button onClick={() => setIsCreating(true)} className="px-5 py-2 bg-brand-500 text-brand-light rounded-lg font-medium hover:bg-brand-700 hover:text-brand-light text-sm shadow-sm">
+          <button onClick={() => setIsCreating(true)} className="px-5 py-2 bg-brand-500 text-brand-light rounded-lg font-medium hover:bg-brand-700 hover:text-brand-light text-sm shadow-neo border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">
             Write First Note
           </button>
         </div>
@@ -258,7 +250,7 @@ export default function JournalGallery() {
               <div 
                 key={entry.id} 
                 onClick={() => navigate(`/journal/${entry.id}`)}
-                className="bg-brand-dark rounded-xl shadow-sm border border-brand-900/30 overflow-hidden hover:shadow-md hover:border-brand-500/50 transition-all cursor-pointer flex flex-col h-72 relative group"
+                className="bg-brand-dark rounded-xl shadow-neo border-2 border-brand-900 overflow-hidden hover:shadow-neo hover:border-brand-500/50 transition-all cursor-pointer flex flex-col h-72 relative group"
               >
                 {/* Rating Badge */}
                 {entry.rating && (
@@ -270,13 +262,13 @@ export default function JournalGallery() {
                 {/* Delete Button */}
                 <button 
                   onClick={(e) => handleDelete(e, entry.id)}
-                  className="absolute top-3 left-3 w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all shadow-sm z-10"
+                  className="absolute top-3 left-3 w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-500 hover:text-white transition-all shadow-neo z-10 border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
                   title="Delete Note"
                 >
                   <Trash2 size={16} />
                 </button>
 
-                <div className="h-32 bg-brand-darker/50 relative shrink-0 border-b border-brand-900/30">
+                <div className="h-32 bg-brand-darker/50 relative shrink-0 border-b-2 border-brand-900 shadow-neo">
                   {entry.cover_image ? (
                     <img src={entry.cover_image} alt="Cover" className="w-full h-full object-cover" />
                   ) : (

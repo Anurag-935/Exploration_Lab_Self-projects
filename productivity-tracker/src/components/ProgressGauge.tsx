@@ -11,7 +11,7 @@ export default function ProgressGauge({ progress }: { progress: number }) {
   else if (progress === 0) color = "#6b7280" // gray-500
 
   return (
-    <div className="relative flex flex-col items-center justify-end w-14 h-12 bg-brand-dark/90 backdrop-blur-sm rounded-t-full shadow-sm p-1 border border-brand-900/50">
+    <div className="relative flex flex-col items-center justify-end w-14 h-12 bg-brand-dark/90 backdrop-blur-sm rounded-t-full shadow-neo p-1 border-2 border-brand-900">
       <svg viewBox="0 0 100 55" className="w-full h-full overflow-visible">
         {/* Background Track */}
         <path

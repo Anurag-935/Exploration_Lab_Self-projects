@@ -8,7 +8,7 @@ export default function DatePendingWidget({ tasks }: { tasks: Task[] }) {
   const dateName = now.toLocaleDateString("en-US", { month: "short", day: "numeric" })
 
   return (
-    <div className="w-full h-full bg-brand-dark p-4 rounded-xl border border-brand-900/30 flex flex-col justify-between">
+    <div className="w-full h-full bg-brand-dark p-4 rounded-xl border-2 border-brand-900 flex flex-col justify-between shadow-neo-input">
       <div className="text-right">
         <div className="text-lg font-bold text-brand-light leading-tight">{dayName}</div>
         <div className="text-sm font-medium text-brand-500 uppercase tracking-widest">{dateName}</div>

@@ -44,7 +44,7 @@ export default function ConsistencyGraph({ tasks, habits }: Props) {
   }
 
   return (
-    <div className="bg-brand-dark p-6 rounded-xl shadow-lg border border-brand-900/30">
+    <div className="bg-brand-dark p-6 rounded-xl shadow-neo border-2 border-brand-900">
       <div className="flex justify-between items-center mb-6">
         <h3 className="font-semibold text-brand-light tracking-wide uppercase text-sm">Consistency Tracker</h3>
       </div>

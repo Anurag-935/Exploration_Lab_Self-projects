@@ -2,9 +2,9 @@ import { useState, useEffect } from "react"
 
 function FlipDigit({ digit }: { digit: string }) {
   return (
-    <div className="relative inline-flex flex-col items-center justify-center bg-brand-darker border border-brand-900/50 rounded-lg w-10 sm:w-12 h-14 sm:h-16 shadow-[0_4px_12px_rgba(0,0,0,0.5)] overflow-hidden mx-0.5">
+    <div className="relative inline-flex flex-col items-center justify-center bg-brand-darker border-2 border-brand-900 rounded-lg w-10 sm:w-12 h-14 sm:h-16 shadow-[0_4px_12px_rgba(0,0,0,0.5)] overflow-hidden mx-0.5">
       <div className="absolute top-0 w-full h-1/2 bg-gradient-to-b from-white/5 to-transparent border-b border-black/50"></div>
-      <span className="text-3xl sm:text-4xl font-bold text-brand-light z-10 font-mono tracking-tighter drop-shadow-md">{digit}</span>
+      <span className="text-3xl sm:text-4xl font-bold text-brand-light z-10 font-mono tracking-tighter drop-shadow-neo">{digit}</span>
       <div className="absolute top-1/2 left-0 w-full h-[1px] bg-black/80 z-20 shadow-[0_1px_2px_rgba(255,255,255,0.1)]"></div>
       <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-black/20 to-transparent"></div>
     </div>

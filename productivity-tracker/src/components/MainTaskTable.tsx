@@ -141,21 +141,21 @@ export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkill
   }
 
   return (
-    <div className="bg-brand-dark p-6 rounded-xl shadow-lg border border-brand-900/30 flex flex-col h-full">
+    <div className="bg-brand-dark p-6 rounded-xl shadow-neo border-2 border-brand-900 flex flex-col h-full">
       <h3 className="font-semibold text-lg text-brand-light mb-4">Main Tasks</h3>
       
       <div className="flex-1 overflow-auto mb-4">
-        <table className="w-full text-left border-collapse border border-brand-900/30 table-auto">
+        <table className="w-full text-left border-collapse border-2 border-brand-900 table-auto">
           <thead>
-            <tr className="border-b border-brand-900/30 text-brand-light/50 text-xs uppercase tracking-wider">
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Priority</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Title</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Time Taken</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">EXP</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Skills</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Type</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900/30">Description</th>
-              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 text-center">Check Box</th>
+            <tr className="border-b-2 border-brand-900 text-brand-light/50 text-xs uppercase tracking-wider">
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900 shadow-neo-input">Priority</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900 shadow-neo-input">Title</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900 shadow-neo-input">Time Taken</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900 shadow-neo-input">EXP</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900 shadow-neo-input">Skills</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900 shadow-neo-input">Type</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 border-r border-brand-900 shadow-neo-input">Description</th>
+              <th className="py-4 px-4 font-semibold text-brand-light/60 bg-brand-darker/50 text-center shadow-neo-input">Check Box</th>
             </tr>
           </thead>
           <tbody>
@@ -165,11 +165,11 @@ export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkill
                 <tr 
                   key={task.id} 
                   onClick={() => { if(task.status !== 'done') openEdit(task) }}
-                  className={`border-b border-brand-900/20 transition-colors group ${task.status === 'done' ? 'opacity-40 bg-brand-darker/20' : 'hover:bg-brand-darker cursor-pointer'}`}
+                  className={`border-b-2 border-brand-900 transition-colors group ${task.status === 'done' ? 'opacity-40 bg-brand-darker/20' : 'hover:bg-brand-darker cursor-pointer'}`}
                 >
-                  <td className="py-4 px-4 border-r border-brand-900/30">{renderPriority(task.priority || 3)}</td>
-                  <td className="py-4 px-4 border-r border-brand-900/30 font-semibold text-brand-light text-base">{task.title}</td>
-                  <td className="py-4 px-4 border-r border-brand-900/30 text-brand-light/70">
+                  <td className="py-4 px-4 border-r border-brand-900">{renderPriority(task.priority || 3)}</td>
+                  <td className="py-4 px-4 border-r border-brand-900 font-semibold text-brand-light text-base">{task.title}</td>
+                  <td className="py-4 px-4 border-r border-brand-900 text-brand-light/70">
                   {(() => {
                     if (!task.time_logs || task.time_logs.length === 0) return "-"
                     const totalSecs = task.time_logs.reduce((sum, log) => sum + (log.duration_seconds || 0), 0)
@@ -182,24 +182,23 @@ export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkill
                     return `${s}s`
                   })()}
                 </td>
-                  <td className="py-4 px-4 border-r border-brand-900/30 text-brand-500 font-bold text-lg">+{task.exp_value || 0}</td>
-                  <td className="py-4 px-4 border-r border-brand-900/30">
+                  <td className="py-4 px-4 border-r border-brand-900 text-brand-500 font-bold text-lg">+{task.exp_value || 0}</td>
+                  <td className="py-4 px-4 border-r border-brand-900">
                     <div className="flex flex-wrap gap-1">
                       {sNames.length > 0 ? sNames.map(s => (
                         <span key={s} className="px-1.5 py-0.5 bg-brand-900/30 text-brand-500 text-[10px] rounded uppercase">{s}</span>
                       )) : <span className="text-brand-light/30 text-xs">-</span>}
                     </div>
                   </td>
-                  <td className="py-4 px-4 border-r border-brand-900/30 text-xs font-medium text-brand-light/70 uppercase tracking-wide">{task.task_type || "Short Task"}</td>
-                  <td className="py-4 px-4 border-r border-brand-900/30 text-sm text-brand-light/60 whitespace-normal break-words">{task.note || "-"}</td>
-                  <td className="py-4 px-4 border-r border-brand-900/30 text-center">
+                  <td className="py-4 px-4 border-r border-brand-900 text-xs font-medium text-brand-light/70 uppercase tracking-wide">{task.task_type || "Short Task"}</td>
+                  <td className="py-4 px-4 border-r border-brand-900 text-sm text-brand-light/60 whitespace-normal break-words">{task.note || "-"}</td>
+                  <td className="py-4 px-4 border-r border-brand-900 text-center">
                     <input 
                       type="checkbox" 
                       checked={task.status === "done"} 
                       onChange={(e) => handleToggleTask(e as any, task.id, task.status)}
                       onClick={(e) => e.stopPropagation()}
-                      className="w-5 h-5 rounded border-brand-900 bg-brand-darker text-brand-500 focus:ring-brand-500 cursor-pointer" 
-                    />
+                      className="w-5 h-5 rounded border-brand-900 bg-brand-darker text-brand-500 focus:ring-brand-500 cursor-pointer shadow-neo-input" />
                   </td>
                 </tr>
               )
@@ -213,34 +212,34 @@ export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkill
         </table>
       </div>
 
-      <button onClick={openAdd} className="w-full py-3 bg-brand-500 hover:bg-brand-700 text-brand-light rounded-lg font-medium transition-colors shadow-md">
+      <button onClick={openAdd} className="w-full py-3 bg-brand-500 hover:bg-brand-700 text-brand-light rounded-lg font-medium transition-colors border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">
         Add New Task
       </button>
 
       {/* Editor Modal */}
       {(editingTask || showAddModal) && (
         <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-brand-dark rounded-xl w-full max-w-2xl overflow-hidden border border-brand-900/50">
-            <div className="p-4 border-b border-brand-900/50 flex justify-between items-center">
+          <div className="bg-brand-dark rounded-xl w-full max-w-2xl overflow-hidden border-2 border-brand-900 shadow-neo-input">
+            <div className="p-4 border-b-2 border-brand-900 flex justify-between items-center">
               <h3 className="font-semibold text-brand-light text-lg">{editingTask ? "Edit Task" : "New Task"}</h3>
-              <button onClick={() => { setEditingTask(null); setShowAddModal(false) }} className="text-brand-light/50 hover:text-brand-light text-xl"><X size={20} /></button>
+              <button onClick={() => { setEditingTask(null); setShowAddModal(false) }} className="text-brand-light/50 hover:text-brand-light text-xl border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "><X size={20} /></button>
             </div>
             
             <form onSubmit={handleSave} className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-brand-light/70 mb-1">Title</label>
-                  <input type="text" value={title} onChange={e => setTitle(e.target.value)} required className="w-full px-3 py-2 bg-brand-darker border border-brand-900/50 rounded text-brand-light outline-none focus:border-brand-500" />
+                  <input type="text" value={title} onChange={e => setTitle(e.target.value)} required className="w-full px-3 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none focus:border-brand-500 shadow-neo-input" />
                 </div>
                 
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-brand-light/70 mb-1">Description</label>
-                  <textarea value={desc} onChange={e => setDesc(e.target.value)} className="w-full px-3 py-2 bg-brand-darker border border-brand-900/50 rounded text-brand-light outline-none focus:border-brand-500 h-20 resize-none" />
+                  <textarea value={desc} onChange={e => setDesc(e.target.value)} className="w-full px-3 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none focus:border-brand-500 h-20 resize-none shadow-neo-input" />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-brand-light/70 mb-1">Priority</label>
-                  <select value={priority} onChange={e => setPriority(Number(e.target.value))} className="w-full px-3 py-2 bg-brand-darker border border-brand-900/50 rounded text-brand-light outline-none focus:border-brand-500">
+                  <select value={priority} onChange={e => setPriority(Number(e.target.value))} className="w-full px-3 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none focus:border-brand-500 shadow-neo-input">
                     <option value={1}>1 - High</option>
                     <option value={2}>2 - Medium</option>
                     <option value={3}>3 - Low</option>
@@ -249,7 +248,7 @@ export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkill
 
                 <div>
                   <label className="block text-sm font-medium text-brand-light/70 mb-1">Type</label>
-                  <select value={type} onChange={e => setType(e.target.value)} className="w-full px-3 py-2 bg-brand-darker border border-brand-900/50 rounded text-brand-light outline-none focus:border-brand-500">
+                  <select value={type} onChange={e => setType(e.target.value)} className="w-full px-3 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none focus:border-brand-500 shadow-neo-input">
                     <option value="Short Task">Short Task</option>
                     <option value="Habit">Habit</option>
                     <option value="Long Plan">Long Plan</option>
@@ -260,7 +259,7 @@ export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkill
 
                 <div>
                   <label className="block text-sm font-medium text-brand-light/70 mb-1">EXP Reward</label>
-                  <input type="number" value={exp} onChange={e => setExp(Number(e.target.value))} disabled={!!editingTask} min={1} required className="w-full px-3 py-2 bg-brand-darker border border-brand-900/50 rounded text-brand-light outline-none focus:border-brand-500 disabled:opacity-50 disabled:cursor-not-allowed" />
+                  <input type="number" value={exp} onChange={e => setExp(Number(e.target.value))} disabled={!!editingTask} min={1} required className="w-full px-3 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none focus:border-brand-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-neo-input" />
                 </div>
                 
                 <div className="col-span-2">
@@ -271,7 +270,7 @@ export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkill
                         key={s}
                         type="button"
                         onClick={() => toggleSkill(s)}
-                        className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${selectedSkills.includes(s) ? 'bg-brand-500 border-brand-500 text-brand-light' : 'bg-brand-darker border-brand-900/50 text-brand-light/50 hover:border-brand-500/50'}`}
+                        className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${selectedSkills.includes(s) ? 'bg-brand-500 border-brand-500 text-brand-light' : 'bg-brand-darker border-brand-900 text-brand-light/50 hover:border-brand-500/50'}`}
                       >
                         {s}
                       </button>
@@ -280,17 +279,17 @@ export default function MainTaskTable({ tasks, refetch }: { tasks: TaskWithSkill
                 </div>
               </div>
 
-                            <div className="flex justify-between items-center pt-4 border-t border-brand-900/50">
+                            <div className="flex justify-between items-center pt-4 border-t-2 border-brand-900 border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">
                 <div>
                   {editingTask && (
-                    <button type="button" onClick={handleDeleteTask} className="flex items-center gap-2 px-3 py-2 text-brand-500 hover:bg-brand-500/10 rounded font-medium transition-colors">
+                    <button type="button" onClick={handleDeleteTask} className="flex items-center gap-2 px-3 py-2 text-brand-500 hover:bg-brand-500/10 rounded font-medium transition-colors border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">
                       <Trash2 size={16} /> Delete
                     </button>
                   )}
                 </div>
                 <div className="flex gap-3">
-                  <button type="button" onClick={() => { setEditingTask(null); setShowAddModal(false) }} className="px-4 py-2 text-brand-light/70 hover:text-brand-light">Cancel</button>
-                  <button type="submit" disabled={loading} className="px-6 py-2 bg-brand-500 hover:bg-brand-700 text-brand-light rounded font-medium disabled:opacity-50">
+                  <button type="button" onClick={() => { setEditingTask(null); setShowAddModal(false) }} className="px-4 py-2 text-brand-light/70 hover:text-brand-light border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">Cancel</button>
+                  <button type="submit" disabled={loading} className="px-6 py-2 bg-brand-500 hover:bg-brand-700 text-brand-light rounded font-medium disabled:opacity-50 border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">
                     {loading ? "Saving..." : "Save Task"}
                   </button>
                 </div>

@@ -58,7 +58,7 @@ export default function TimeSpentWidget({ refreshTrigger }: { refreshTrigger: nu
   }
 
   return (
-    <div className="w-full h-full bg-brand-dark p-4 rounded-xl border border-brand-900/30 flex flex-col justify-between">
+    <div className="w-full h-full bg-brand-dark p-4 rounded-xl border-2 border-brand-900 flex flex-col justify-between shadow-neo">
       <h3 className="text-xs font-semibold text-brand-500 uppercase tracking-widest mb-2">Time Spent</h3>
       
       {loading ? (

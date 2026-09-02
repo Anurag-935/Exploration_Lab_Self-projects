@@ -144,21 +144,17 @@ export default function ProjectDetail({ project, onClose, onUpdated }: Props) {
 
   return createPortal(
     <div className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-brand-dark rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-brand-900/50 shadow-2xl overflow-hidden">
+      <div className="bg-brand-dark rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col border-2 border-brand-900 shadow-neo overflow-hidden">
         
         {/* Header */}
-        <div className="p-6 border-b border-brand-900/50 bg-brand-darker/50 flex flex-col gap-3 relative">
+        <div className="p-6 border-b-2 border-brand-900 bg-brand-darker/50 flex flex-col gap-3 relative shadow-neo-input">
           <div className="absolute top-4 right-4 flex gap-2">
-            <button 
-              onClick={handleDelete}
-              className="text-red-500/50 hover:text-red-500 hover:bg-red-500/10 p-2 rounded-full transition-all"
+            <button onClick={handleDelete} className="text-red-500/50 hover:text-red-500 hover:bg-red-500/10 p-2 rounded-full transition-all border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
               title="Delete Project"
             >
               <Trash2 size={20} />
             </button>
-            <button 
-              onClick={onClose}
-              className="text-brand-light/50 hover:text-brand-light hover:bg-brand-900/50 p-2 rounded-full transition-all"
+            <button onClick={onClose} className="text-brand-light/50 hover:text-brand-light hover:bg-brand-900/50 p-2 rounded-full transition-all border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
             >
               <X size={20} />
             </button>
@@ -170,14 +166,14 @@ export default function ProjectDetail({ project, onClose, onUpdated }: Props) {
               onChange={e => setTitle(e.target.value)}
               onBlur={handleUpdateMeta}
               placeholder="Project Title"
-              className="w-full bg-transparent text-2xl font-bold text-brand-light outline-none border-b border-transparent focus:border-brand-500/50 transition-colors pb-1"
+              className="w-full bg-transparent text-2xl font-bold text-brand-light outline-none border-b border-transparent focus:border-brand-500/50 transition-colors pb-1 border-2 border-brand-900 shadow-neo-input "
             />
             <textarea
               value={desc}
               onChange={e => setDesc(e.target.value)}
               onBlur={handleUpdateMeta}
               placeholder="Add a short description..."
-              className="w-full bg-transparent text-brand-light/60 mt-2 outline-none resize-none border-b border-transparent focus:border-brand-500/50 transition-colors h-16"
+              className="w-full bg-transparent text-brand-light/60 mt-2 outline-none resize-none border-b border-transparent focus:border-brand-500/50 transition-colors h-16 border-2 border-brand-900 shadow-neo-input "
             />
           </div>
         </div>
@@ -186,7 +182,7 @@ export default function ProjectDetail({ project, onClose, onUpdated }: Props) {
           
           {/* Progress Slider & Add to Table */}
           <div className="flex flex-col md:flex-row gap-4 items-stretch">
-            <div className="flex-1 bg-brand-darker p-5 rounded-xl border border-brand-900/30">
+            <div className="flex-1 bg-brand-darker p-5 rounded-xl border-2 border-brand-900 shadow-neo-input">
               <div className="flex justify-between items-center mb-4">
                 <label className="text-sm font-semibold text-brand-light/70 uppercase tracking-widest">Progress</label>
                 <span className={`text-lg font-bold ${progress >= 100 ? 'text-brand-500' : 'text-brand-light'}`}>{Math.round(progress)}%</span>
@@ -206,7 +202,7 @@ export default function ProjectDetail({ project, onClose, onUpdated }: Props) {
             
             <button 
               onClick={() => setShowTaskModal(true)}
-              className="flex-1 md:flex-none flex flex-col items-center justify-center bg-brand-500/10 hover:bg-brand-500 hover:text-white text-brand-500 border border-brand-500/30 rounded-xl p-4 transition-all font-medium text-sm gap-2"
+              className="flex-1 md:flex-none flex flex-col items-center justify-center bg-brand-500/10 hover:bg-brand-500 hover:text-white text-brand-500 rounded-xl p-4 transition-all font-medium text-sm gap-2 border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
             >
               <Plus size={24} />
               Add to Table
@@ -220,18 +216,14 @@ export default function ProjectDetail({ project, onClose, onUpdated }: Props) {
             </h3>
             
             {/* Add Log Form */}
-            <div className="mb-6 bg-brand-darker p-4 rounded-xl border border-brand-900/30">
+            <div className="mb-6 bg-brand-darker p-4 rounded-xl border-2 border-brand-900 shadow-neo-input">
               <textarea 
                 value={newLog}
                 onChange={e => setNewLog(e.target.value)}
                 placeholder="Log today's progress..."
-                className="w-full px-3 py-2 bg-brand-dark border border-brand-900/50 rounded text-brand-light focus:ring-1 focus:ring-brand-500 outline-none resize-none h-24 text-sm"
-              />
+                className="w-full px-3 py-2 bg-brand-dark border-2 border-brand-900 rounded text-brand-light focus:ring-1 focus:ring-brand-500 outline-none resize-none h-24 text-sm shadow-neo-input" />
               <div className="flex justify-end mt-2">
-                <button 
-                  onClick={handleAddLog}
-                  disabled={!newLog.trim() || saving}
-                  className="px-4 py-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white rounded text-sm font-medium flex items-center gap-2 transition-colors"
+                <button onClick={handleAddLog} disabled={!newLog.trim() || saving} className="px-4 py-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white rounded text-sm font-medium flex items-center gap-2 transition-colors border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
                 >
                   {saving ? "Saving..." : <><Plus size={16} /> Add Entry</>}
                 </button>
@@ -248,16 +240,15 @@ export default function ProjectDetail({ project, onClose, onUpdated }: Props) {
                 {logs.map(log => {
                   const isExpanded = expandedDates.has(log.log_date)
                   return (
-                    <div key={log.id} className="border border-brand-900/40 rounded-lg overflow-hidden bg-brand-darker/50">
+                    <div key={log.id} className="border-2 border-brand-900 rounded-lg overflow-hidden bg-brand-darker/50 shadow-neo-input">
                       <button 
                         onClick={() => toggleDate(log.log_date)}
-                        className="w-full px-4 py-3 flex items-center justify-between bg-brand-darker hover:bg-brand-900/30 transition-colors text-left"
-                      >
+                        className="w-full px-4 py-3 flex items-center justify-between bg-brand-darker hover:bg-brand-900/30 transition-colors text-left shadow-neo-input border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">
                         <span className="font-medium text-brand-light/90">{log.log_date}</span>
                         {isExpanded ? <ChevronDown size={18} className="text-brand-light/50" /> : <ChevronRight size={18} className="text-brand-light/50" />}
                       </button>
                       {isExpanded && (
-                        <div className="p-4 bg-brand-dark text-brand-light/80 text-sm leading-relaxed whitespace-pre-wrap border-t border-brand-900/30">
+                        <div className="p-4 bg-brand-dark text-brand-light/80 text-sm leading-relaxed whitespace-pre-wrap border-t-2 border-brand-900 shadow-neo-input">
                           {log.content}
                         </div>
                       )}
@@ -272,24 +263,24 @@ export default function ProjectDetail({ project, onClose, onUpdated }: Props) {
         {/* Task Creation Modal */}
         {showTaskModal && (
           <div className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-brand-dark rounded-xl w-full max-w-xl overflow-hidden border border-brand-900/50 shadow-2xl">
-              <div className="p-4 border-b border-brand-900/50 flex justify-between items-center bg-brand-darker/50">
+            <div className="bg-brand-dark rounded-xl w-full max-w-xl overflow-hidden border-2 border-brand-900 shadow-neo">
+              <div className="p-4 border-b-2 border-brand-900 flex justify-between items-center bg-brand-darker/50 shadow-neo-input">
                 <h3 className="font-semibold text-brand-light text-lg">Add Project to Table</h3>
-                <button onClick={() => setShowTaskModal(false)} className="text-brand-light/50 hover:text-brand-light"><X size={20} /></button>
+                <button onClick={() => setShowTaskModal(false)} className="text-brand-light/50 hover:text-brand-light border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "><X size={20} /></button>
               </div>
               <form onSubmit={handleAddTask} className="p-6 space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-brand-light/70 mb-1">Title</label>
-                  <input type="text" value={title} disabled className="w-full px-3 py-2 bg-brand-darker border border-brand-900/50 rounded text-brand-light/50 outline-none cursor-not-allowed" />
+                  <input type="text" value={title} disabled className="w-full px-3 py-2 bg-brand-darker rounded text-brand-light/50 outline-none cursor-not-allowed shadow-neo shadow-[2px_2px_0px_#000000] border-2 border-brand-900 shadow-[2px_2px_0px_#000000] " shadow-neo />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-brand-light/70 mb-1">Type</label>
-                  <input type="text" value="Short Task" disabled className="w-full px-3 py-2 bg-brand-darker border border-brand-900/50 rounded text-brand-light/50 outline-none cursor-not-allowed" />
+                  <input type="text" value="Short Task" disabled className="w-full px-3 py-2 bg-brand-darker rounded text-brand-light/50 outline-none cursor-not-allowed shadow-neo shadow-[2px_2px_0px_#000000] border-2 border-brand-900 shadow-[2px_2px_0px_#000000] " shadow-neo />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-brand-light/70 mb-1">Priority</label>
-                    <select value={taskPriority} onChange={e => setTaskPriority(Number(e.target.value))} className="w-full px-3 py-2 bg-brand-darker border border-brand-900/50 rounded text-brand-light outline-none focus:border-brand-500">
+                    <select value={taskPriority} onChange={e => setTaskPriority(Number(e.target.value))} className="w-full px-3 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none focus:border-brand-500 shadow-neo-input">
                       <option value={1}>1 - High</option>
                       <option value={2}>2 - Medium</option>
                       <option value={3}>3 - Low</option>
@@ -297,7 +288,7 @@ export default function ProjectDetail({ project, onClose, onUpdated }: Props) {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-brand-light/70 mb-1">EXP Reward</label>
-                    <select value={taskExp} onChange={e => setTaskExp(Number(e.target.value))} className="w-full px-3 py-2 bg-brand-darker border border-brand-900/50 rounded text-brand-light outline-none focus:border-brand-500">
+                    <select value={taskExp} onChange={e => setTaskExp(Number(e.target.value))} className="w-full px-3 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none focus:border-brand-500 shadow-neo-input">
                       <option value={10}>+10 (Trivial)</option>
                       <option value={20}>+20 (Quick)</option>
                       <option value={40}>+40 (Moderate)</option>
@@ -314,16 +305,16 @@ export default function ProjectDetail({ project, onClose, onUpdated }: Props) {
                         key={s}
                         type="button"
                         onClick={() => setTaskSkills(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s])}
-                        className={`px-3 py-1.5 rounded-lg border text-sm transition-all ${taskSkills.includes(s) ? 'bg-brand-500/20 border-brand-500 text-brand-500' : 'bg-brand-darker border-brand-900/50 text-brand-light/60 hover:border-brand-500/50'}`}
+                        className={`px-3 py-1.5 rounded-lg border text-sm transition-all ${taskSkills.includes(s) ? 'bg-brand-500/20 border-brand-500 text-brand-500' : 'bg-brand-darker border-brand-900 text-brand-light/60 hover:border-brand-500/50'}`}
                       >
                         {s}
                       </button>
                     ))}
                   </div>
                 </div>
-                <div className="flex justify-end gap-3 pt-4">
-                  <button type="button" onClick={() => setShowTaskModal(false)} className="px-4 py-2 text-brand-light/70 hover:text-brand-light">Cancel</button>
-                  <button type="submit" disabled={taskSaving} className="px-6 py-2 bg-brand-500 hover:bg-brand-700 text-brand-light rounded font-medium disabled:opacity-50">
+                <div className="flex justify-end gap-3 pt-4 border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">
+                  <button type="button" onClick={() => setShowTaskModal(false)} className="px-4 py-2 text-brand-light/70 hover:text-brand-light border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">Cancel</button>
+                  <button type="submit" disabled={taskSaving} className="px-6 py-2 bg-brand-500 hover:bg-brand-700 text-brand-light rounded font-medium disabled:opacity-50 border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">
                     {taskSaving ? "Adding..." : "Add to Table"}
                   </button>
                 </div>

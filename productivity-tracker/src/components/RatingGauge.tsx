@@ -3,14 +3,14 @@ import React from "react"
 export default function RatingGauge({ rating }: { rating: number }) {
   // We draw a semi-circle from left to right.
   // ViewBox is 100x50. The arc goes from (10,45) to (90,45) with radius 40.
-  // The path length of a half circle with radius 40 is PI * 40 ˜ 125.6
+  // The path length of a half circle with radius 40 is PI * 40  125.6
   
   const percentage = rating / 5
   const pathLength = 125.6
   const strokeDashoffset = pathLength - (pathLength * percentage)
 
   return (
-    <div className="relative flex flex-col items-center justify-end w-12 h-10 bg-brand-dark/90 backdrop-blur-sm rounded-t-full shadow-sm p-1 border border-brand-900/50">
+    <div className="relative flex flex-col items-center justify-end w-12 h-10 bg-brand-dark/90 backdrop-blur-sm rounded-t-full shadow-neo p-1 border-2 border-brand-900">
       <svg viewBox="0 0 100 55" className="w-full h-full overflow-visible">
         {/* Background Track */}
         <path

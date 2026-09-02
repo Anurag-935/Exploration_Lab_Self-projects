@@ -31,7 +31,7 @@ export default function MonthlyLineGraph({ tasks }: { tasks: Task[] }) {
   }, [tasks])
 
   return (
-    <div className="w-full bg-brand-dark p-6 rounded-xl shadow-lg border border-brand-900/30">
+    <div className="w-full bg-brand-dark p-6 rounded-xl shadow-neo border-2 border-brand-900">
       <h3 className="font-semibold text-brand-light tracking-wide uppercase text-sm mb-6">Completed Tasks (This Month)</h3>
       <div className="w-full h-64">
         <ResponsiveContainer width="100%" height="100%">
@@ -42,12 +42,12 @@ export default function MonthlyLineGraph({ tasks }: { tasks: Task[] }) {
                 <stop offset="95%" stopColor="#B14858" stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#5A1420" vertical={false} />
-            <XAxis dataKey="day" stroke="#EFE7DE" fontSize={12} tickLine={false} axisLine={false} />
-            <YAxis stroke="#EFE7DE" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
+            <CartesianGrid  stroke="#000000" vertical={false} />
+            <XAxis dataKey="day" stroke="#1A1A1A" fontSize={12} tickLine={false} axisLine={false} />
+            <YAxis stroke="#1A1A1A" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
             <Tooltip 
-              contentStyle={{ backgroundColor: '#2A2A2B', border: '1px solid #5A1420', borderRadius: '8px' }}
-              itemStyle={{ color: '#EFE7DE' }}
+              contentStyle={{ backgroundColor: '#FFFFFF', border: '2px solid #000000', boxShadow: '4px 4px 0px #000000', borderRadius: '8px' }}
+              itemStyle={{ color: '#1A1A1A' }}
             />
             <Area type="monotone" dataKey="count" name="Tasks Completed" stroke="#B14858" strokeWidth={3} fillOpacity={1} fill="url(#colorCount)" />
           </AreaChart>

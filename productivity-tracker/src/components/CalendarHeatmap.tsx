@@ -34,7 +34,7 @@ export default function CalendarHeatmap({ tasks }: { tasks: Task[] }) {
 
   const getDayColor = (dateNum: number) => {
     const stat = dayStats[dateNum]
-    if (!stat || stat.total === 0) return "bg-brand-900/10 border-brand-900/30 text-brand-light/20" // grey/empty
+    if (!stat || stat.total === 0) return "bg-brand-900/10 border-brand-900 text-brand-light/20" // grey/empty
     
     const pct = stat.done / stat.total
     
@@ -52,7 +52,7 @@ export default function CalendarHeatmap({ tasks }: { tasks: Task[] }) {
   const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
   return (
-    <div className="bg-brand-dark p-6 rounded-xl shadow-lg border border-brand-900/30 flex flex-col h-full w-full">
+    <div className="bg-brand-dark p-6 rounded-xl shadow-neo border-2 border-brand-900 flex flex-col h-full w-full">
       <div className="flex justify-between items-end mb-4">
         <h3 className="font-semibold text-brand-light tracking-wide uppercase text-sm">Monthly Consistency</h3>
         <span className="text-brand-500 font-bold">{monthName} {year}</span>
@@ -73,7 +73,7 @@ export default function CalendarHeatmap({ tasks }: { tasks: Task[] }) {
           return (
             <div 
               key={d} 
-              className={`aspect-square rounded-md border flex items-center justify-center text-xs font-semibold transition-all duration-300 hover:-translate-y-1 cursor-default ${getDayColor(d)} ${todayStyles}`}
+              className={`aspect-square rounded-md border-2 border-brand-900 flex items-center justify-center text-xs font-semibold transition-all duration-300 hover:-translate-y-1 cursor-default ${getDayColor(d)} ${todayStyles}`}
             >
               {d}
             </div>
@@ -82,7 +82,7 @@ export default function CalendarHeatmap({ tasks }: { tasks: Task[] }) {
       </div>
       
       <div className="flex justify-center gap-4 mt-4 text-[10px] text-brand-light/50 uppercase font-medium">
-        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-brand-900/10 border border-brand-900/30"></div> None</div>
+        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-brand-900/10 border-2 border-brand-900"></div> None</div>
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-red-500/80"></div> 0%</div>
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-yellow-500/80"></div> 50%</div>
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-green-500/80"></div> 100%</div>

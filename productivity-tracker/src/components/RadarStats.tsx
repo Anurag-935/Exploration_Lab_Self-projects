@@ -16,7 +16,7 @@ const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload
     return (
-      <div className="bg-brand-darker border border-brand-900/50 p-3 rounded shadow-xl">
+      <div className="bg-brand-darker border-2 border-brand-900 p-3 rounded shadow-neo">
         <p className="text-brand-500 font-bold mb-1">{data.name}</p>
         <p className="text-brand-light text-sm">Level: <span className="font-semibold">{data.level}</span></p>
         <p className="text-brand-light/70 text-xs">Total XP: {data.xp}</p>
@@ -72,14 +72,14 @@ export default function RadarStats({ tasks }: Props) {
   }, [tasks])
 
   return (
-    <div className="bg-brand-dark p-6 rounded-xl shadow-lg border border-brand-900/30 flex flex-col h-full">
+    <div className="bg-brand-dark p-6 rounded-xl shadow-neo border-2 border-brand-900 flex flex-col h-full">
       <h3 className="font-semibold text-brand-light mb-2 text-center tracking-wide uppercase text-sm">Skill Radar</h3>
       
       <div className="h-64 w-full mb-6">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart cx="50%" cy="50%" outerRadius="65%" data={stats.data}>
-            <PolarGrid stroke="#5A1420" />
-            <PolarAngleAxis dataKey="name" tick={{ fill: '#EFE7DE', fontSize: 10, fontWeight: 600 }} />
+            <PolarGrid stroke="#000000" />
+            <PolarAngleAxis dataKey="name" tick={{ fill: '#1A1A1A', fontSize: 10, fontWeight: 600 }} />
             {/* Setting a static domain ensures the hexagon never distorts, even if some values are 0 */}
             <PolarRadiusAxis angle={30} domain={[0, stats.maxVal]} tick={false} axisLine={false} />
             <Tooltip content={<CustomTooltip />} />
@@ -88,7 +88,7 @@ export default function RadarStats({ tasks }: Props) {
         </ResponsiveContainer>
       </div>
 
-            <div className="mt-2 bg-brand-darker p-4 rounded-lg border border-brand-900/50 flex flex-col items-center justify-center">
+            <div className="mt-2 bg-brand-darker p-4 rounded-lg border-2 border-brand-900 flex flex-col items-center justify-center shadow-neo-input">
         <span className="text-xs font-bold text-brand-light/70 uppercase tracking-wider mb-1">Average Global EXP</span>
         <span className="text-2xl font-bold text-brand-500">{Math.round(stats.data.reduce((sum, s) => sum + s.xp, 0) / 6)}</span>
       </div>

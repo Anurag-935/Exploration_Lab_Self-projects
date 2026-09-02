@@ -83,14 +83,14 @@ export default function Timer({ activeTasks, onStop }: Props) {
   }
 
   return (
-    <div className="bg-brand-dark p-6 rounded-xl shadow-lg border border-brand-900/30 flex flex-col h-full items-center justify-center">
+    <div className="bg-brand-dark p-6 rounded-xl shadow-neo border-2 border-brand-900 flex flex-col h-full items-center justify-center">
       <h3 className="font-semibold text-brand-light tracking-wide uppercase text-sm mb-4">Focus Timer</h3>
       
       <select 
         value={selectedTaskId}
         onChange={(e) => setSelectedTaskId(e.target.value)}
         disabled={isRunning || elapsed > 0}
-        className="w-full max-w-[200px] mb-6 px-3 py-2 bg-brand-darker border border-brand-900/50 rounded text-brand-light outline-none focus:border-brand-500 text-sm disabled:opacity-50"
+        className="w-full max-w-[200px] mb-6 px-3 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none focus:border-brand-500 text-sm disabled:opacity-50 shadow-neo"
       >
         <option value="">Select a task...</option>
         {activeTasks.map(t => (
@@ -98,25 +98,22 @@ export default function Timer({ activeTasks, onStop }: Props) {
         ))}
       </select>
 
-      <div className="text-5xl font-bold text-brand-light font-mono tracking-tighter mb-8 drop-shadow-md">
+      <div className="text-5xl font-bold text-brand-light font-mono tracking-tighter mb-8 drop-shadow-neo">
         {formatTime(elapsed)}
       </div>
 
       <div className="flex gap-4">
         {!isRunning ? (
-          <button onClick={handleStart} className="w-12 h-12 flex items-center justify-center rounded-full bg-brand-500 text-white hover:bg-brand-700 hover:scale-105 transition-all shadow-lg">
+          <button onClick={handleStart} className="w-12 h-12 flex items-center justify-center rounded-full bg-brand-500 text-white hover:bg-brand-700 hover:scale-105 transition-all border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">
             <Play size={20} className="ml-1" />
           </button>
         ) : (
-          <button onClick={handlePause} className="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-500 text-white hover:bg-yellow-600 hover:scale-105 transition-all shadow-lg">
+          <button onClick={handlePause} className="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-500 text-white hover:bg-yellow-600 hover:scale-105 transition-all border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">
             <Pause size={20} />
           </button>
         )}
         
-        <button 
-          onClick={handleStop} 
-          disabled={elapsed === 0}
-          className="w-12 h-12 flex items-center justify-center rounded-full bg-brand-darker border-2 border-brand-900/50 text-brand-500 hover:border-brand-500 hover:text-brand-light hover:bg-brand-500 transition-all shadow-lg disabled:opacity-50 disabled:hover:scale-100 disabled:hover:bg-brand-darker disabled:hover:border-brand-900/50 disabled:hover:text-brand-500"
+        <button onClick={handleStop} disabled={elapsed === 0} className="w-12 h-12 flex items-center justify-center rounded-full bg-brand-darker text-brand-500 hover:border-brand-500 hover:text-brand-light hover:bg-brand-500 transition-all disabled:opacity-50 disabled:hover:scale-100 disabled:hover:bg-brand-darker disabled:hover:border-brand-900 disabled:hover:text-brand-500 border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
         >
           <Square size={16} fill="currentColor" />
         </button>

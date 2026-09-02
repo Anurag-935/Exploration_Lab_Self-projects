@@ -40,11 +40,11 @@ export default function JournalDetail() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 pb-12">
-      <button onClick={() => navigate('/journal')} className="text-brand-500 hover:underline text-sm font-medium">
+      <button onClick={() => navigate('/journal')} className="text-brand-500 hover:underline text-sm font-medium border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">
         &larr; Back to Gallery
       </button>
 
-      <div className="bg-brand-dark rounded-xl shadow-sm border border-brand-900/30 overflow-hidden relative">
+      <div className="bg-brand-dark rounded-xl shadow-neo border-2 border-brand-900 overflow-hidden relative">
         {entry.rating && (
           <div className="absolute top-4 right-4 z-10 scale-125 origin-top-right">
             <RatingGauge rating={entry.rating} />
@@ -52,7 +52,7 @@ export default function JournalDetail() {
         )}
         
         {entry.cover_image && (
-          <div className="h-64 bg-brand-darker w-full">
+          <div className="h-64 bg-brand-darker w-full shadow-neo">
             <img src={entry.cover_image} alt="Cover" className="w-full h-full object-cover" />
           </div>
         )}

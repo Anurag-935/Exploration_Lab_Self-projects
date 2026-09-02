@@ -11,10 +11,10 @@
 @layer utilities {
   @keyframes pulse-glow {
     0%, 100% {
-      box-shadow: 0 0 10px 1px rgba(239, 231, 222, 0.2);
+      box-shadow: 0 0 10px 1px rgba(232, 52, 43, 0.3);
     }
     50% {
-      box-shadow: 0 0 16px 4px rgba(239, 231, 222, 0.6);
+      box-shadow: 0 0 16px 4px rgba(232, 52, 43, 0.8);
     }
   }
   

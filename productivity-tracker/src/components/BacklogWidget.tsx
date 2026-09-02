@@ -144,7 +144,7 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
   const recommendedItem = backlog.length > 0 ? backlog[recIndex % backlog.length] : null
 
   if (loading) return (
-    <div className="w-full h-full bg-brand-dark p-4 rounded-xl border border-brand-900/30 flex items-center justify-center">
+    <div className="w-full h-full bg-brand-dark p-4 rounded-xl border-2 border-brand-900 flex items-center justify-center shadow-neo-input">
       <span className="text-brand-light/50 text-sm">Loading Recommendation...</span>
     </div>
   )
@@ -152,7 +152,7 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
   return (
     <>
       {/* Widget UI */}
-      <div className="w-full h-full bg-brand-dark p-4 rounded-xl border border-brand-900/30 flex flex-col justify-between">
+      <div className="w-full h-full bg-brand-dark p-4 rounded-xl border-2 border-brand-900 flex flex-col justify-between shadow-neo-input">
         <div>
           <h3 className="text-xs font-semibold text-brand-500 uppercase tracking-widest mb-2 flex items-center justify-between">
             Recommended Next
@@ -168,14 +168,13 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
         <div className="flex gap-2 mt-4">
           <button 
             onClick={() => setShowListModal(true)}
-            className="flex-1 px-3 py-1.5 bg-brand-darker border border-brand-900/50 text-brand-light rounded text-xs font-medium hover:bg-brand-900 transition-colors"
-          >
+            className="flex-1 px-3 py-1.5 bg-brand-darker border-2 border-brand-900 text-brand-light rounded text-xs font-medium hover:bg-brand-900 transition-colors shadow-neo-input border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">
             Manage Pending
           </button>
           {recommendedItem && (
             <button 
               onClick={() => handleStartMoveToTable(recommendedItem)}
-              className="flex-1 px-3 py-1.5 bg-brand-500 text-brand-light rounded text-xs font-medium hover:bg-brand-700 transition-colors"
+              className="flex-1 px-3 py-1.5 bg-brand-500 text-brand-light rounded text-xs font-medium hover:bg-brand-700 transition-colors border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
             >
               Add to Table
             </button>
@@ -186,18 +185,14 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
       {/* Add to Table Modal */}
       {showAddModal && activeItem && (
         <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-brand-dark rounded-xl w-full max-w-md overflow-hidden border border-brand-900/50">
-            <div className="p-4 border-b border-brand-900/50">
+          <div className="bg-brand-dark rounded-xl w-full max-w-md overflow-hidden border-2 border-brand-900 shadow-neo-input">
+            <div className="p-4 border-b-2 border-brand-900">
               <h3 className="font-semibold text-brand-light text-lg">Move to Main Table</h3>
             </div>
             <form onSubmit={handleConfirmMoveToTable} className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-brand-light/70 mb-1">Task Title</label>
-                <input 
-                  type="text" 
-                  value={activeItem.title} 
-                  disabled
-                  className="w-full px-3 py-2 bg-brand-darker border border-brand-900/50 rounded text-brand-light/50 cursor-not-allowed"
+                <input type="text" value={activeItem.title} disabled className="w-full px-3 py-2 bg-brand-darker rounded text-brand-light/50 cursor-not-allowed shadow-neo shadow-[2px_2px_0px_#000000] border-2 border-brand-900 shadow-[2px_2px_0px_#000000] " shadow-neo
                 />
               </div>
               <div>
@@ -205,13 +200,13 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
                 <textarea 
                   value={newTaskNote}
                   onChange={(e) => setNewTaskNote(e.target.value)}
-                  className="w-full px-3 py-2 bg-brand-darker border border-brand-900/50 rounded text-brand-light focus:ring-1 focus:ring-brand-500 outline-none resize-none h-24"
+                  className="w-full px-3 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light focus:ring-1 focus:ring-brand-500 outline-none resize-none h-24 shadow-neo"
                   placeholder="Add details before moving to your active tasks..."
                 />
               </div>
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 text-brand-light/70 hover:text-brand-light">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-brand-500 hover:bg-brand-700 text-brand-light rounded font-medium">Add to Table</button>
+                <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 text-brand-light/70 hover:text-brand-light border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-brand-500 hover:bg-brand-700 text-brand-light rounded font-medium border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">Add to Table</button>
               </div>
             </form>
           </div>
@@ -221,15 +216,15 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
       {/* Manage Pending Modal */}
       {showListModal && (
         <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-brand-dark rounded-xl w-full max-w-lg overflow-hidden border border-brand-900/50 flex flex-col h-[70vh]">
-            <div className="p-4 border-b border-brand-900/50 flex justify-between items-center">
+          <div className="bg-brand-dark rounded-xl w-full max-w-lg overflow-hidden border-2 border-brand-900 flex flex-col h-[70vh] shadow-neo-input">
+            <div className="p-4 border-b-2 border-brand-900 flex justify-between items-center">
               <h3 className="font-semibold text-brand-light text-lg">
                 Pending Stuff <span className="text-brand-500 text-sm ml-2">({localBacklog.length} total)</span>
               </h3>
-              <button onClick={() => { setShowListModal(false); setLocalBacklog(backlog); }} className="text-brand-light/50 hover:text-brand-light text-xl"><X size={20} /></button>
+              <button onClick={() => { setShowListModal(false); setLocalBacklog(backlog); }} className="text-brand-light/50 hover:text-brand-light text-xl border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "><X size={20} /></button>
             </div>
             
-            <div className="p-4 border-b border-brand-900/30 bg-brand-darker/50">
+            <div className="p-4 border-b-2 border-brand-900 bg-brand-darker/50 shadow-neo-input">
               <div className="flex gap-2">
                 <input 
                   type="text"
@@ -237,9 +232,8 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
                   onChange={(e) => setNewItemTitle(e.target.value)}
                   onKeyDown={(e) => { if(e.key === 'Enter') handleLocalAdd() }}
                   placeholder="Quick add new idea..."
-                  className="flex-1 px-3 py-2 bg-brand-dark border border-brand-900/50 rounded text-brand-light focus:ring-1 focus:ring-brand-500 outline-none text-sm"
-                />
-                <button onClick={handleLocalAdd} className="px-4 py-2 bg-brand-darker border border-brand-900/50 hover:bg-brand-900 text-brand-light rounded font-medium text-sm">Add</button>
+                  className="flex-1 px-3 py-2 bg-brand-dark border-2 border-brand-900 rounded text-brand-light focus:ring-1 focus:ring-brand-500 outline-none text-sm shadow-neo-input" />
+                <button onClick={handleLocalAdd} className="px-4 py-2 bg-brand-darker hover:bg-brand-900 text-brand-light rounded font-medium text-sm border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold " shadow-neo>Add</button>
               </div>
             </div>
 
@@ -253,18 +247,17 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
                     type="text"
                     value={item.title}
                     onChange={(e) => handleLocalEdit(item.id, e.target.value)}
-                    className="flex-1 px-3 py-2 bg-brand-darker border border-transparent hover:border-brand-900/50 focus:border-brand-500 rounded text-brand-light text-sm outline-none transition-colors"
-                  />
+                    className="flex-1 px-3 py-2 bg-brand-darker border border-transparent hover:border-brand-900 focus:border-brand-500 rounded text-brand-light text-sm outline-none transition-colors shadow-neo-input" />
                   <button 
                     onClick={() => handleStartMoveToTable(item)}
-                    className="w-8 h-8 flex items-center justify-center text-brand-500/70 hover:text-brand-500 hover:bg-brand-500/10 rounded transition-colors"
+                    className="w-8 h-8 flex items-center justify-center text-brand-500/70 hover:text-brand-500 hover:bg-brand-500/10 rounded transition-colors border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
                     title="Add to Table"
                   >
                     <ArrowRight size={16} />
                   </button>
                   <button 
                     onClick={() => handleLocalDelete(item.id)}
-                    className="w-8 h-8 flex items-center justify-center text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded transition-colors"
+                    className="w-8 h-8 flex items-center justify-center text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded transition-colors border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold "
                     title="Delete"
                   >
                     <Trash2 size={16} />
@@ -273,9 +266,9 @@ export default function BacklogWidget({ onTaskAdded }: { onTaskAdded: () => void
               ))}
             </div>
 
-            <div className="p-4 border-t border-brand-900/50 flex justify-end gap-3 bg-brand-darker/30">
-              <button onClick={() => { setShowListModal(false); setLocalBacklog(backlog); }} className="px-5 py-2 text-brand-light/70 hover:text-brand-light font-medium">Cancel</button>
-              <button onClick={handleSaveListModal} className="px-6 py-2 bg-brand-500 hover:bg-brand-700 text-brand-light rounded font-medium shadow-md">Save Changes</button>
+            <div className="p-4 border-t-2 border-brand-900 flex justify-end gap-3 bg-brand-darker/30 shadow-neo-input">
+              <button onClick={() => { setShowListModal(false); setLocalBacklog(backlog); }} className="px-5 py-2 text-brand-light/70 hover:text-brand-light font-medium border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">Cancel</button>
+              <button onClick={handleSaveListModal} className="px-6 py-2 bg-brand-500 hover:bg-brand-700 text-brand-light rounded font-medium border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm font-bold ">Save Changes</button>
             </div>
           </div>
         </div>
