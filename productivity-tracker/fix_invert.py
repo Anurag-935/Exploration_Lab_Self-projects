@@ -1,4 +1,7 @@
-/** @type {import('tailwindcss').Config} */
+import sys
+
+# 1. Update tailwind.config.js for Dark Neobrutalism
+tailwind = """/** @type {import('tailwindcss').Config} */
 export default {
   content: [
     "./index.html",
@@ -28,4 +31,6 @@ export default {
     },
   },
   plugins: [],
-}
+}"""
+with open("tailwind.config.js", "w", encoding="utf-8") as f:
+    f.write(tailwind)
