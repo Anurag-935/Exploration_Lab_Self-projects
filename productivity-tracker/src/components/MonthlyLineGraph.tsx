@@ -49,7 +49,7 @@ export default function MonthlyLineGraph({ tasks }: { tasks: Task[] }) {
  contentStyle={{ backgroundColor: '#1A1A1A', border: '2px solid #FFFFFF', boxShadow: '4px 4px 0px #FFFFFF', borderRadius: '8px' }}
  itemStyle={{ color: '#FFFFFF' }}
  />
- <Area type="monotone" dataKey="count" name="Tasks Completed" stroke="#B14858" strokeWidth={3} fillOpacity={1} fill="url(#colorCount)" />
+ <Area type="linear" dataKey="count" name="Tasks Completed" stroke="#B14858" strokeWidth={3} fillOpacity={1} fill="url(#colorCount)" />
  </AreaChart>
  </ResponsiveContainer>
  </div>
