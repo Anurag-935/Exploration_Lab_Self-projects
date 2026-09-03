@@ -16,12 +16,12 @@ export default function Timer({ activeTasks, onStop }: Props) {
  const saved = getSaved()
 
  const [selectedTaskId, setSelectedTaskId] = useState<string>(saved.selectedTaskId || "")
- const [isRunning, setIsRunning] = useState(saved.isRunning || false)
+ const [isRunning, setIsRunning] = useState<boolean>(saved.isRunning || false)
  
  // Real-time tracking
- const [accumulated, setAccumulated] = useState(saved.accumulated || 0)
+ const [accumulated, setAccumulated] = useState<number>(saved.accumulated || 0)
  const [sessionStart, setSessionStart] = useState<number | null>(saved.sessionStart || null)
- const [elapsed, setElapsed] = useState(() => {
+ const [elapsed, setElapsed] = useState<number>(() => {
    let initialElapsed = saved.accumulated || 0
    if (saved.isRunning && saved.sessionStart) {
      initialElapsed += Math.floor((Date.now() - saved.sessionStart) / 1000)
@@ -63,7 +63,7 @@ export default function Timer({ activeTasks, onStop }: Props) {
  const handlePause = () => {
  if (sessionStart) {
  const currentSessionSeconds = Math.floor((Date.now() - sessionStart) / 1000)
- setAccumulated(prev => prev + currentSessionSeconds)
+ setAccumulated((prev: number) => prev + currentSessionSeconds)
  }
  setIsRunning(false)
  setSessionStart(null)
