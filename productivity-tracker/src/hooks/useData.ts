@@ -3,9 +3,17 @@ import { supabase } from "../lib/supabase"
 import { Task, Habit, LongPlan, Skill, Project } from "../types"
 
 // Daily rollover logic
+
+const getLocalYYYYMMDD = (dateInput?: string | Date) => {
+  const d = dateInput ? new Date(dateInput) : new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export const runDailyRollover = async (userId: string) => {
-  const now = new Date()
-  const todayStr = now.toISOString().split("T")[0]
+  const todayStr = getLocalYYYYMMDD()
   
   // 1. Fetch ALL tasks that have carried_over_count >= 0 (meaning active/visible in UI logic)
   const { data: allActive } = await supabase
@@ -17,7 +25,7 @@ export const runDailyRollover = async (userId: string) => {
   if (!allActive || allActive.length === 0) return
 
   const oldTasks = allActive.filter(t => {
-    const createdStr = new Date(t.created_at).toISOString().split("T")[0]
+    const createdStr = getLocalYYYYMMDD(t.created_at)
     return createdStr < todayStr
   })
 
@@ -46,7 +54,7 @@ export const runDailyRollover = async (userId: string) => {
   
   for (const unique of uniqueRecurring) {
     const [type, title] = unique.split("|")
-    const hasTodayInstance = allActive.some(t => t.task_type === type && t.title === title && new Date(t.created_at).toISOString().split("T")[0] === todayStr)
+    const hasTodayInstance = allActive.some(t => t.task_type === type && t.title === title && getLocalYYYYMMDD(t.created_at) === todayStr)
     
     if (!hasTodayInstance) {
       const latestInstance = recurringTasks.filter(t => t.task_type === type && t.title === title).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
