@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react"
 import { supabase } from "../lib/supabase"
 
+
+const getLocalYYYYMMDD = (dateInput?: string | Date) => {
+  const d = dateInput ? new Date(dateInput) : new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export default function TimeSpentWidget({ refreshTrigger }: { refreshTrigger: number }) {
  const [todaySeconds, setTodaySeconds] = useState(0)
  const [avgSeconds, setAvgSeconds] = useState(0)
@@ -26,13 +35,13 @@ export default function TimeSpentWidget({ refreshTrigger }: { refreshTrigger: nu
  let todaySum = 0
  let monthSum = 0
 
- const todayStr = now.toISOString().split("T")[0]
+ const todayStr = getLocalYYYYMMDD()
 
  data?.forEach(log => {
  if (!log.duration_seconds) return
  monthSum += log.duration_seconds
  
- const logDateStr = new Date(log.start_time).toISOString().split("T")[0]
+ const logDateStr = getLocalYYYYMMDD(log.start_time)
  if (logDateStr === todayStr) {
  todaySum += log.duration_seconds
  }
