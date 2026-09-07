@@ -12,8 +12,8 @@ export default function AttendancePie({ attended, missed }: { attended: number, 
   const COLORS = ['#10B981', '#E8342B']
 
   return (
-    <div className="bg-brand-dark rounded-xl border-2 border-brand-900 shadow-neo p-6 flex flex-col items-center justify-center relative">
-      <h2 className="text-xl font-bold text-brand-light mb-4">Overall Attendance</h2>
+    <div className="flex flex-col items-center justify-center relative w-full">
+      
       <div className="w-48 h-48 relative">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>

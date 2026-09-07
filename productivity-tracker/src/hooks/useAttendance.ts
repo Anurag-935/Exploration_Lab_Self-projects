@@ -5,7 +5,7 @@ export type Subject = { id: string, name: string }
 export type Lab = { id: string, name: string }
 export type ClassLog = { id: string, subject_id?: string, lab_id?: string, log_date: string, status: 'present'|'absent'|'cancelled' }
 export type TimetableSlot = { id: string, day_of_week: number, start_time: string, end_time: string, subject_id?: string, lab_id?: string }
-export type CalendarEvent = { id: string, event_date: string, title: string, notes?: string }
+export type CalendarEvent = { id: string, event_date: string, title: string, notes?: string, tag?: string, color?: string }
 
 export function useAttendance() {
   const [subjects, setSubjects] = useState<Subject[]>([])
@@ -79,24 +79,67 @@ export function useAttendance() {
   const logAttendance = async (subjectId: string | null, labId: string | null, status: string, logDate: string) => {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    const payload: any = { user_id: user.id, log_date: logDate, status }
-    if (subjectId) payload.subject_id = subjectId
-    if (labId) payload.lab_id = labId
-    await supabase.from('class_logs').insert(payload)
+    
+    // Check if it exists
+    let query = supabase.from('class_logs').select('id').eq('log_date', logDate)
+    if (subjectId) query = query.eq('subject_id', subjectId)
+    if (labId) query = query.eq('lab_id', labId)
+    const { data: existing } = await query
+    
+    if (existing && existing.length > 0) {
+      await supabase.from('class_logs').update({ status }).eq('id', existing[0].id)
+    } else {
+      const payload: any = { user_id: user.id, log_date: logDate, status }
+      if (subjectId) payload.subject_id = subjectId
+      if (labId) payload.lab_id = labId
+      await supabase.from('class_logs').insert(payload)
+    }
     fetchData()
   }
   
-  const addCalendarEvent = async (eventDate: string, title: string, notes: string) => {
+  
+  const addSubject = async (name: string) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    await supabase.from('subjects').insert({ user_id: user.id, name })
+    fetchData()
+  }
+
+  const deleteSubject = async (id: string) => {
+    await supabase.from('subjects').delete().eq('id', id)
+    fetchData()
+  }
+
+  const addTimetableSlot = async (day_of_week: number, start_time: string, end_time: string, subject_id: string | null, lab_id: string | null) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const payload: any = { user_id: user.id, day_of_week, start_time, end_time }
+    if (subject_id) payload.subject_id = subject_id
+    if (lab_id) payload.lab_id = labId
+    await supabase.from('timetable_slots').insert(payload)
+    fetchData()
+  }
+
+  const deleteTimetableSlot = async (id: string) => {
+    await supabase.from('timetable_slots').delete().eq('id', id)
+    fetchData()
+  }
+
+  const addCalendarEvent = async (eventDate: string, title: string, notes: string, tag: string, color: string) => {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
     await supabase.from('calendar_events').insert({
       user_id: user.id,
       event_date: eventDate,
       title,
-      notes
+      notes,
+      tag,
+      color
     })
     fetchData()
   }
 
-  return { subjects, labs, classLogs, timetableSlots, calendarEvents, loading, refetch: fetchData, logAttendance, addCalendarEvent }
+  
+
+  return { subjects, labs, classLogs, timetableSlots, calendarEvents, loading, refetch: fetchData, logAttendance, addCalendarEvent, addSubject, deleteSubject, addTimetableSlot, deleteTimetableSlot }
 }
