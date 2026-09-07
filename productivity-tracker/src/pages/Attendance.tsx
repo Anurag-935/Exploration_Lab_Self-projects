@@ -239,6 +239,19 @@ export default function Attendance() {
               )
             })}
           </div>
+         {/* Labs Summary */}
+            <div className="w-full bg-brand-dark rounded-xl border-2 border-brand-900 shadow-neo p-6 flex flex-col">
+              <h2 className="text-xl font-bold text-brand-light mb-4">Labs Summary</h2>
+              <div className="flex flex-col gap-4">
+                {labStats.map(lab => (
+                  <div key={lab.id} className="bg-brand-darker border-2 border-brand-900 rounded p-4 text-center">
+                    <div className="font-bold text-brand-light mb-1">{lab.name}</div>
+                    <div className="text-2xl font-black text-brand-light">{lab.attended}</div>
+                    <div className="text-brand-light/50 text-xs">Attended</div>
+                  </div>
+                ))}
+              </div>
+            </div>
         </div>
 
         {/* Right Content */}
@@ -282,23 +295,8 @@ export default function Attendance() {
             </table>
           </div>
           
-          <div className="flex flex-col xl:flex-row gap-6">
-            {/* Labs Summary */}
-            <div className="xl:w-1/3 bg-brand-dark rounded-xl border-2 border-brand-900 shadow-neo p-6 flex flex-col">
-              <h2 className="text-xl font-bold text-brand-light mb-4">Labs Summary</h2>
-              <div className="flex flex-col gap-4">
-                {labStats.map(lab => (
-                  <div key={lab.id} className="bg-brand-darker border-2 border-brand-900 rounded p-4 text-center">
-                    <div className="font-bold text-brand-light mb-1">{lab.name}</div>
-                    <div className="text-2xl font-black text-brand-light">{lab.attended}</div>
-                    <div className="text-brand-light/50 text-xs">Attended</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Calendar Box */}
-            <div className="w-full xl:w-2/3 bg-brand-dark rounded-xl border-2 border-brand-900 shadow-neo p-6">
+          {/* Calendar Box */}
+            <div className="w-full bg-brand-dark rounded-xl border-2 border-brand-900 shadow-neo p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-brand-light">Calendar</h2>
                 <div className="text-brand-light/70 font-semibold">{new Date().toLocaleDateString('en-US', {month:'long', year:'numeric'})}</div>
@@ -319,7 +317,7 @@ export default function Attendance() {
                     <button 
                       key={d}
                       onClick={() => setSelectedDate(dateStr)}
-                      className={`relative p-2 sm:p-4 border-2 rounded transition-colors active:translate-y-[1px]
+                      className={`relative p-3 sm:p-6 text-lg border-2 rounded transition-colors active:translate-y-[1px]
                         ${isToday ? 'border-brand-500 text-brand-500 font-bold bg-brand-500/10 today-glow' : 'border-brand-900 text-brand-light bg-brand-darker hover:bg-brand-900/50'}
                       `}
                     >
@@ -336,7 +334,6 @@ export default function Attendance() {
                 })}
               </div>
             </div>
-          </div>
         </div>
       </div>
 
