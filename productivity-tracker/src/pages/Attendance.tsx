@@ -21,7 +21,7 @@ const EVENT_TAGS = [
 ]
 
 export default function Attendance() {
-  const { subjects, labs, classLogs, timetableSlots, calendarEvents, loading, logAttendance, addCalendarEvent, addSubject, deleteSubject, addTimetableSlot, deleteTimetableSlot } = useAttendance()
+  const { subjects, labs, classLogs, timetableSlots, calendarEvents, loading, logAttendance, addCalendarEvent, addSubject, deleteSubject, addLab, deleteLab, addTimetableSlot, deleteTimetableSlot } = useAttendance()
   
   const [expandedSubjectId, setExpandedSubjectId] = useState<string | null>(null)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
@@ -37,10 +37,11 @@ export default function Attendance() {
   const [showSetup, setShowSetup] = useState(false)
   const [setupTab, setSetupTab] = useState<'subjects' | 'timetable'>('subjects')
   const [newSubName, setNewSubName] = useState('')
+  const [newLabName, setNewLabName] = useState('')
   const [newSlotDay, setNewSlotDay] = useState(1)
   const [newSlotStart, setNewSlotStart] = useState('09:00')
   const [newSlotEnd, setNewSlotEnd] = useState('10:00')
-  const [newSlotSub, setNewSlotSub] = useState('')
+  const [newSlotItem, setNewSlotItem] = useState('')
 
   const currentLogDayOfWeek = new Date(currentLogDate).getDay()
 
@@ -104,8 +105,20 @@ export default function Attendance() {
 
   const handleAddSlot = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newSlotSub) return
-    addTimetableSlot(newSlotDay, newSlotStart, newSlotEnd, newSlotSub, null)
+    if (!newSlotItem) return
+    const isLab = labs.some(l => l.id === newSlotItem)
+    if (isLab) {
+      addTimetableSlot(newSlotDay, newSlotStart, newSlotEnd, null, newSlotItem)
+    } else {
+      addTimetableSlot(newSlotDay, newSlotStart, newSlotEnd, newSlotItem, null)
+    }
+  }
+
+  const handleAddLab = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newLabName) return
+    addLab(newLabName)
+    setNewLabName('')
   }
 
   // Generate timetable grid
@@ -346,24 +359,43 @@ export default function Attendance() {
               <button onClick={() => setShowSetup(false)} className="text-brand-light/50 hover:text-brand-light"><X size={20}/></button>
             </div>
             <div className="flex border-b-2 border-brand-900">
-              <button onClick={()=>setSetupTab('subjects')} className={`flex-1 p-3 font-bold ${setupTab==='subjects'?'bg-brand-500 text-brand-light':'text-brand-light/50 hover:bg-brand-darker'}`}>Manage Subjects</button>
+              <button onClick={()=>setSetupTab('subjects')} className={`flex-1 p-3 font-bold ${setupTab==='subjects'?'bg-brand-500 text-brand-light':'text-brand-light/50 hover:bg-brand-darker'}`}>Subjects & Labs</button>
               <button onClick={()=>setSetupTab('timetable')} className={`flex-1 p-3 font-bold border-l-2 border-brand-900 ${setupTab==='timetable'?'bg-brand-500 text-brand-light':'text-brand-light/50 hover:bg-brand-darker'}`}>Manage Timetable</button>
             </div>
             
             <div className="p-6 overflow-y-auto flex-1">
               {setupTab === 'subjects' && (
-                <div className="flex flex-col gap-6">
-                  <form onSubmit={handleAddSubject} className="flex gap-3">
-                    <input required type="text" placeholder="New Subject Name" value={newSubName} onChange={e=>setNewSubName(e.target.value)} className="flex-1 px-3 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none focus:border-brand-500 shadow-neo-input" />
-                    <button type="submit" className="font-bold px-4 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm flex items-center gap-2"><Plus size={18}/> Add</button>
-                  </form>
-                  <div className="flex flex-col gap-2">
-                    {subjects.map(s => (
-                      <div key={s.id} className="flex justify-between items-center p-3 bg-brand-darker border-2 border-brand-900 rounded">
-                        <span className="font-bold text-brand-light">{s.name}</span>
-                        <button onClick={()=>deleteSubject(s.id)} className="text-brand-500 hover:text-red-400 p-1"><Trash size={18}/></button>
-                      </div>
-                    ))}
+                <div className="flex flex-col gap-10">
+                  <div className="flex flex-col gap-6">
+                    <h4 className="font-bold text-brand-light border-b-2 border-brand-900 pb-2">Subjects</h4>
+                    <form onSubmit={handleAddSubject} className="flex gap-3">
+                      <input required type="text" placeholder="New Subject Name" value={newSubName} onChange={e=>setNewSubName(e.target.value)} className="flex-1 px-3 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none focus:border-brand-500 shadow-neo-input" />
+                      <button type="submit" className="font-bold px-4 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm flex items-center gap-2"><Plus size={18}/> Add</button>
+                    </form>
+                    <div className="flex flex-col gap-2">
+                      {subjects.map(s => (
+                        <div key={s.id} className="flex justify-between items-center p-3 bg-brand-darker border-2 border-brand-900 rounded">
+                          <span className="font-bold text-brand-light">{s.name}</span>
+                          <button onClick={()=>deleteSubject(s.id)} className="text-brand-500 hover:text-red-400 p-1"><Trash size={18}/></button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-6">
+                    <h4 className="font-bold text-brand-light border-b-2 border-brand-900 pb-2">Labs</h4>
+                    <form onSubmit={handleAddLab} className="flex gap-3">
+                      <input required type="text" placeholder="New Lab Name" value={newLabName} onChange={e=>setNewLabName(e.target.value)} className="flex-1 px-3 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none focus:border-brand-500 shadow-neo-input" />
+                      <button type="submit" className="font-bold px-4 py-2 bg-brand-500 hover:bg-brand-700 text-white rounded border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm flex items-center gap-2"><Plus size={18}/> Add</button>
+                    </form>
+                    <div className="flex flex-col gap-2">
+                      {labs.map(l => (
+                        <div key={l.id} className="flex justify-between items-center p-3 bg-brand-darker border-2 border-brand-900 rounded">
+                          <span className="font-bold text-brand-light">{l.name}</span>
+                          <button onClick={()=>deleteLab(l.id)} className="text-brand-500 hover:text-red-400 p-1"><Trash size={18}/></button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
@@ -386,13 +418,18 @@ export default function Attendance() {
                       <input type="time" value={newSlotEnd} onChange={e=>setNewSlotEnd(e.target.value)} className="w-full px-2 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none shadow-neo-input text-sm" />
                     </div>
                     <div className="flex flex-col">
-                      <label className="text-xs text-brand-light/70 mb-1 font-bold">Subject</label>
-                      <select value={newSlotSub} onChange={e=>setNewSlotSub(e.target.value)} className="w-full px-2 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none shadow-neo-input text-sm">
+                      <label className="text-xs text-brand-light/70 mb-1 font-bold">Class / Lab</label>
+                      <select value={newSlotItem} onChange={e=>setNewSlotItem(e.target.value)} className="w-full px-2 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none shadow-neo-input text-sm">
                         <option value="">Select...</option>
-                        {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                        <optgroup label="Subjects">
+                          {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                        </optgroup>
+                        <optgroup label="Labs">
+                          {labs.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                        </optgroup>
                       </select>
                     </div>
-                    <button type="submit" disabled={!newSlotSub} className="font-bold px-3 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm disabled:opacity-50 h-full">Add</button>
+                    <button type="submit" disabled={!newSlotItem} className="font-bold px-3 py-2 bg-[#10B981] hover:bg-[#059669] text-white rounded border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm disabled:opacity-50 h-full">Add</button>
                   </form>
                   
                   <div className="flex flex-col gap-2">

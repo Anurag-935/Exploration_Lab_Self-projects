@@ -105,6 +105,19 @@ export function useAttendance() {
     fetchData()
   }
 
+  
+  const addLab = async (name: string) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    await supabase.from('labs').insert({ user_id: user.id, name })
+    fetchData()
+  }
+
+  const deleteLab = async (id: string) => {
+    await supabase.from('labs').delete().eq('id', id)
+    fetchData()
+  }
+
   const deleteSubject = async (id: string) => {
     await supabase.from('subjects').delete().eq('id', id)
     fetchData()
@@ -141,5 +154,5 @@ export function useAttendance() {
 
   
 
-  return { subjects, labs, classLogs, timetableSlots, calendarEvents, loading, refetch: fetchData, logAttendance, addCalendarEvent, addSubject, deleteSubject, addTimetableSlot, deleteTimetableSlot }
+  return { subjects, labs, classLogs, timetableSlots, calendarEvents, loading, refetch: fetchData, logAttendance, addCalendarEvent, addSubject, deleteSubject, addLab, deleteLab, addTimetableSlot, deleteTimetableSlot }
 }
