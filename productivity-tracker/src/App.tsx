@@ -6,6 +6,7 @@ import MainLayout from "./layouts/MainLayout"
 import Dashboard from "./pages/Dashboard"
 import JournalGallery from "./pages/JournalGallery"
 import JournalDetail from "./pages/JournalDetail"
+import Attendance from "./pages/Attendance"
 import Auth from "./components/Auth"
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="journal" element={<JournalGallery />} />
           <Route path="journal/:id" element={<JournalDetail />} />
+          <Route path="attendance" element={<Attendance />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

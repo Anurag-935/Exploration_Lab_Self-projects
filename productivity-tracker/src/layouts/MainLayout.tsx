@@ -12,6 +12,7 @@ export default function MainLayout() {
           <nav className="hidden sm:flex gap-6">
             <Link to="/" className={`text-sm font-medium transition-colors ${location.pathname === '/' ? 'text-brand-500' : 'text-brand-light/70 hover:text-brand-light'}`}>Dashboard</Link>
             <Link to="/journal" className={`text-sm font-medium transition-colors ${location.pathname === '/journal' ? 'text-brand-500' : 'text-brand-light/70 hover:text-brand-light'}`}>Journal</Link>
+            <Link to="/attendance" className={`text-sm font-medium transition-colors ${location.pathname === '/attendance' ? 'text-brand-500' : 'text-brand-light/70 hover:text-brand-light'}`}>Attendance</Link>
           </nav>
         </div>
         <button 
