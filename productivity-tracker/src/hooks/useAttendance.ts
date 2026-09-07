@@ -115,7 +115,7 @@ export function useAttendance() {
     if (!user) return
     const payload: any = { user_id: user.id, day_of_week, start_time, end_time }
     if (subject_id) payload.subject_id = subject_id
-    if (lab_id) payload.lab_id = labId
+    if (lab_id) payload.lab_id = lab_id
     await supabase.from('timetable_slots').insert(payload)
     fetchData()
   }
