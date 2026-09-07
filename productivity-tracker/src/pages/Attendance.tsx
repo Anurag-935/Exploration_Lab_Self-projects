@@ -15,7 +15,7 @@ const getLocalYYYYMMDD = (dateInput?: string | Date) => {
 export default function Attendance() {
   const { subjects, labs, classLogs, timetableSlots, calendarEvents, loading, logAttendance, addCalendarEvent } = useAttendance()
   
-  const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null)
+  const [selectedSubject, setSelectedSubject] = useState<any | null>(null)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   
   const [eventTitle, setEventTitle] = useState('')
@@ -254,7 +254,7 @@ export default function Attendance() {
                   <LineChart data={
                     (() => {
                       let tAtt = 0; let tHeld = 0;
-                      const d = selectedSubject.logs.sort((a,b)=>a.log_date.localeCompare(b.log_date)).filter(x=>x.status!=='cancelled').map((log, i) => {
+                      const d = selectedSubject.logs.sort((a: any, b: any)=>a.log_date.localeCompare(b.log_date)).filter((x: any)=>x.status!=='cancelled').map((log: any, i: number) => {
                         tHeld += 1
                         if(log.status === 'present') tAtt += 1
                         return { index: i+1, percent: Math.round((tAtt/tHeld)*100) }
@@ -272,7 +272,7 @@ export default function Attendance() {
               <div>
                 <h4 className="font-bold text-brand-light mb-3">Log History</h4>
                 <div className="flex flex-col gap-2">
-                  {selectedSubject.logs.sort((a,b)=>b.log_date.localeCompare(a.log_date)).map(log => (
+                  {selectedSubject.logs.sort((a: any, b: any)=>b.log_date.localeCompare(a.log_date)).map((log: any) => (
                     <div key={log.id} className="flex justify-between items-center bg-brand-darker border-2 border-brand-900 rounded p-3">
                       <span className="font-medium text-brand-light">{log.log_date}</span>
                       <span className={`font-bold text-sm ${log.status === 'present' ? 'text-[#10B981]' : log.status === 'absent' ? 'text-brand-500' : 'text-brand-light/50'}`}>
