@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import { useAttendance, Subject, ClassLog, TimetableSlot } from '../hooks/useAttendance'
 import AttendancePie from '../components/AttendancePie'
-import { X, Check, Minus, Calendar as CalIcon, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Settings, Plus, Trash } from 'lucide-react'
+import { X, Check, Minus, Calendar as CalIcon, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Settings, Plus, Trash, RefreshCcw } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 const getLocalYYYYMMDD = (dateInput?: string | Date) => {
@@ -10,6 +10,12 @@ const getLocalYYYYMMDD = (dateInput?: string | Date) => {
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+}
+
+const parseTime = (timeStr: string) => {
+  let [h, m] = timeStr.split(':').map(Number);
+  if (h < 7) h += 12; // Auto-correct things like 02:30 to 14:30
+  return h + (m / 60);
 }
 
 const EVENT_TAGS = [
@@ -31,9 +37,11 @@ export default function Attendance() {
   const [eventTag, setEventTag] = useState(EVENT_TAGS[0].label)
 
   const [currentLogDate, setCurrentLogDate] = useState(() => getLocalYYYYMMDD())
+  const [substitutingSlotId, setSubstitutingSlotId] = useState<string | null>(null)
+  const [substituteSubjectId, setSubstituteSubjectId] = useState<string>('')
+  
   const todayStr = useMemo(() => getLocalYYYYMMDD(), [])
 
-  // Setup Modal State
   const [showSetup, setShowSetup] = useState(false)
   const [setupTab, setSetupTab] = useState<'subjects' | 'timetable'>('subjects')
   const [newSubName, setNewSubName] = useState('')
@@ -46,7 +54,7 @@ export default function Attendance() {
   const currentLogDayOfWeek = new Date(currentLogDate).getDay()
 
   const dailyClasses = useMemo(() => {
-    return timetableSlots.filter(slot => slot.day_of_week === currentLogDayOfWeek).sort((a,b)=>a.start_time.localeCompare(b.start_time))
+    return timetableSlots.filter(slot => slot.day_of_week === currentLogDayOfWeek).sort((a,b)=>parseTime(a.start_time) - parseTime(b.start_time))
   }, [timetableSlots, currentLogDayOfWeek])
 
   const subjectStats = useMemo(() => {
@@ -55,7 +63,8 @@ export default function Attendance() {
       const held = logs.filter(l => l.status !== 'cancelled').length
       const attended = logs.filter(l => l.status === 'present').length
       const missed = logs.filter(l => l.status === 'absent').length
-      const percent = held === 0 ? 100 : Math.round((attended / held) * 100)
+      // Fix: Default to 0% if no classes held yet
+      const percent = held === 0 ? 0 : Math.round((attended / held) * 100)
       const missableRaw = Math.floor(attended / 0.75) - held
       const missable = missableRaw > 0 ? missableRaw : 0
       return { ...sub, held, attended, missed, percent, missable, logs }
@@ -69,8 +78,11 @@ export default function Attendance() {
     })
   }, [labs, classLogs])
 
-  const handleLog = (slot: TimetableSlot, status: string) => {
-    logAttendance(slot.subject_id || null, slot.lab_id || null, status, currentLogDate)
+  const handleLog = (slot: TimetableSlot, status: string, subId?: string) => {
+    const finalSubId = subId || slot.subject_id || null
+    logAttendance(slot.id, finalSubId, slot.lab_id || null, status, currentLogDate)
+    setSubstitutingSlotId(null)
+    setSubstituteSubjectId('')
   }
 
   const handleSaveEvent = (e: React.FormEvent) => {
@@ -102,6 +114,12 @@ export default function Attendance() {
     addSubject(newSubName)
     setNewSubName('')
   }
+  const handleAddLab = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newLabName) return
+    addLab(newLabName)
+    setNewLabName('')
+  }
 
   const handleAddSlot = (e: React.FormEvent) => {
     e.preventDefault()
@@ -114,21 +132,27 @@ export default function Attendance() {
     }
   }
 
-  const handleAddLab = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newLabName) return
-    addLab(newLabName)
-    setNewLabName('')
-  }
+  // Timetable CSS Grid Setup
+  const minHour = useMemo(() => {
+    let m = 8;
+    timetableSlots.forEach(s => {
+      const h = parseTime(s.start_time);
+      if (h < m) m = Math.floor(h);
+    });
+    return m;
+  }, [timetableSlots]);
 
-  // Generate timetable grid
-  const uniqueTimes = useMemo(() => {
-    const times = new Set<string>()
-    timetableSlots.forEach(t => times.add(t.start_time.slice(0,5)))
-    return Array.from(times).sort()
-  }, [timetableSlots])
-  
-  const gridDays = [1, 2, 3, 4, 5, 6] // Mon-Sat
+  const maxHour = useMemo(() => {
+    let m = 18;
+    timetableSlots.forEach(s => {
+      const h = parseTime(s.end_time);
+      if (h > m) m = Math.ceil(h);
+    });
+    return m;
+  }, [timetableSlots]);
+
+  const totalHours = maxHour - minHour;
+  const gridDays = [1, 2, 3, 4, 5] // Mon-Fri
 
   if (loading) return <div className="flex items-center justify-center min-h-screen text-brand-light">Loading Attendance...</div>
 
@@ -159,25 +183,46 @@ export default function Attendance() {
         ) : (
           <div className="flex flex-col gap-3">
             {dailyClasses.map(slot => {
-              const name = slot.subject_id ? subjects.find(s=>s.id===slot.subject_id)?.name : labs.find(l=>l.id===slot.lab_id)?.name
-              const existingLog = classLogs.find(log => log.log_date === currentLogDate && ((slot.subject_id && log.subject_id === slot.subject_id) || (slot.lab_id && log.lab_id === slot.lab_id)))
+              // Backward compatibility check for logs
+              const existingLog = classLogs.find(log => 
+                log.log_date === currentLogDate && 
+                (log.timetable_slot_id === slot.id || (log.timetable_slot_id == null && ((slot.subject_id && log.subject_id === slot.subject_id) || (slot.lab_id && log.lab_id === slot.lab_id))))
+              )
               
+              // Name respects substitution
+              const renderedSubjectId = existingLog?.subject_id || slot.subject_id
+              const name = renderedSubjectId ? subjects.find(s=>s.id===renderedSubjectId)?.name : labs.find(l=>l.id===slot.lab_id)?.name
+              const isSubstituting = substitutingSlotId === slot.id
+
               return (
                 <div key={slot.id} className="flex flex-col sm:flex-row sm:items-center justify-between bg-brand-darker p-4 rounded border-2 border-brand-900 shadow-neo-sm">
                   <div className="mb-3 sm:mb-0 flex items-center gap-3">
                     <span className="font-bold text-brand-light text-lg">{name}</span>
-                    <span className="text-brand-light/70 text-sm">{slot.start_time.slice(0,5)}</span>
+                    <span className="text-brand-light/70 text-sm">{slot.start_time.slice(0,5)} - {slot.end_time.slice(0,5)}</span>
                     {existingLog && (
                       <span className={`px-2 py-0.5 rounded text-xs font-bold ${existingLog.status === 'present' ? 'bg-[#10B981]/20 text-[#10B981]' : existingLog.status === 'absent' ? 'bg-brand-500/20 text-brand-500' : 'bg-brand-900/50 text-brand-light/70'}`}>
                         {existingLog.status.toUpperCase()}
                       </span>
                     )}
                   </div>
-                  <div className="flex gap-2 font-bold">
-                    <button onClick={() => handleLog(slot, 'present')} className={`px-4 py-2 rounded border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm transition-all ${existingLog?.status === 'present' ? 'bg-[#10B981] text-white opacity-50' : 'bg-[#10B981] hover:bg-[#059669] text-white'}`}><Check size={18}/></button>
-                    <button onClick={() => handleLog(slot, 'absent')} className={`px-4 py-2 rounded border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm transition-all ${existingLog?.status === 'absent' ? 'bg-brand-500 text-white opacity-50' : 'bg-brand-500 hover:bg-brand-700 text-white'}`}><X size={18}/></button>
-                    <button onClick={() => handleLog(slot, 'cancelled')} className={`px-4 py-2 rounded border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm transition-all ${existingLog?.status === 'cancelled' ? 'bg-brand-900 text-white opacity-50' : 'bg-brand-darker hover:bg-brand-900 text-brand-light/70'}`} title="Cancelled"><Minus size={18}/></button>
-                  </div>
+                  
+                  {isSubstituting ? (
+                    <div className="flex gap-2 items-center">
+                      <select value={substituteSubjectId} onChange={e=>setSubstituteSubjectId(e.target.value)} className="px-2 py-1 bg-brand-dark border-2 border-brand-900 rounded text-brand-light outline-none shadow-neo-sm text-sm">
+                        <option value="">Select subject...</option>
+                        {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                      </select>
+                      <button disabled={!substituteSubjectId} onClick={() => handleLog(slot, 'present', substituteSubjectId)} className="px-3 py-1 bg-[#10B981] text-white font-bold rounded border-2 border-brand-900 shadow-neo-sm disabled:opacity-50 text-sm">Confirm</button>
+                      <button onClick={() => setSubstitutingSlotId(null)} className="px-3 py-1 bg-brand-darker text-brand-light/70 rounded border-2 border-brand-900 shadow-neo-sm text-sm">Cancel</button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2 font-bold">
+                      <button onClick={() => setSubstitutingSlotId(slot.id)} className="px-3 py-1 text-xs bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500 hover:text-brand-darker rounded border-2 border-yellow-500 shadow-neo-sm mr-2 transition-all flex items-center gap-1"><RefreshCcw size={14}/> Sub</button>
+                      <button onClick={() => handleLog(slot, 'present')} className={`px-4 py-2 rounded border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm transition-all ${existingLog?.status === 'present' ? 'bg-[#10B981] text-white opacity-50' : 'bg-[#10B981] hover:bg-[#059669] text-white'}`}><Check size={18}/></button>
+                      <button onClick={() => handleLog(slot, 'absent')} className={`px-4 py-2 rounded border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm transition-all ${existingLog?.status === 'absent' ? 'bg-brand-500 text-white opacity-50' : 'bg-brand-500 hover:bg-brand-700 text-white'}`}><X size={18}/></button>
+                      <button onClick={() => handleLog(slot, 'cancelled')} className={`px-4 py-2 rounded border-2 border-brand-900 shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-sm transition-all ${existingLog?.status === 'cancelled' ? 'bg-brand-900 text-white opacity-50' : 'bg-brand-darker hover:bg-brand-900 text-brand-light/70'}`} title="Cancelled"><Minus size={18}/></button>
+                    </div>
+                  )}
                 </div>
               )
             })}
@@ -252,101 +297,123 @@ export default function Attendance() {
               )
             })}
           </div>
-         {/* Labs Summary */}
-            <div className="w-full bg-brand-dark rounded-xl border-2 border-brand-900 shadow-neo p-6 flex flex-col">
-              <h2 className="text-xl font-bold text-brand-light mb-4">Labs Summary</h2>
-              <div className="flex flex-col gap-4">
-                {labStats.map(lab => (
-                  <div key={lab.id} className="bg-brand-darker border-2 border-brand-900 rounded p-4 text-center">
-                    <div className="font-bold text-brand-light mb-1">{lab.name}</div>
-                    <div className="text-2xl font-black text-brand-light">{lab.attended}</div>
-                    <div className="text-brand-light/50 text-xs">Attended</div>
-                  </div>
-                ))}
-              </div>
+
+          <div className="w-full bg-brand-dark rounded-xl border-2 border-brand-900 shadow-neo p-6 flex flex-col">
+            <h2 className="text-xl font-bold text-brand-light mb-4">Labs Summary</h2>
+            <div className="flex flex-col gap-4">
+              {labStats.map(lab => (
+                <div key={lab.id} className="bg-brand-darker border-2 border-brand-900 rounded p-4 text-center">
+                  <div className="font-bold text-brand-light mb-1">{lab.name}</div>
+                  <div className="text-2xl font-black text-brand-light">{lab.attended}</div>
+                  <div className="text-brand-light/50 text-xs">Attended</div>
+                </div>
+              ))}
             </div>
+          </div>
         </div>
 
         {/* Right Content */}
         <div className="w-full md:w-2/3 flex flex-col gap-6">
-          {/* Timetable Grid */}
+          
+          {/* Timetable CSS Grid Layout */}
           <div className="w-full bg-brand-dark rounded-xl border-2 border-brand-900 shadow-neo p-6 overflow-x-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-brand-light">Timetable</h2>
               <button onClick={() => setShowSetup(true)} className="flex items-center gap-2 text-sm font-bold bg-brand-darker px-3 py-1.5 rounded border-2 border-brand-900 hover:text-brand-light text-brand-light/70 shadow-neo active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"><Settings size={16}/> Edit Setup</button>
             </div>
             
-            <table className="w-full border-collapse border-2 border-brand-900 min-w-[600px]">
-              <thead>
-                <tr>
-                  <th className="border-2 border-brand-900 p-2 bg-brand-darker text-brand-light/70 w-24">Day</th>
-                  {uniqueTimes.map(t => (
-                    <th key={t} className="border-2 border-brand-900 p-2 bg-brand-darker text-brand-light font-bold text-sm">{t}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {gridDays.map(day => {
+            <div className="flex flex-col border-2 border-brand-900 bg-brand-dark rounded overflow-hidden min-w-[700px]">
+               {/* Timeline Header */}
+               <div className="flex relative h-8 border-b-2 border-brand-900 bg-brand-darker">
+                  <div className="w-16 flex-shrink-0 border-r-2 border-brand-900"></div>
+                  <div className="flex-1 relative">
+                     {Array.from({length: totalHours + 1}).map((_, i) => (
+                        <div key={i} className="absolute text-[10px] text-brand-light/70 -translate-x-1/2 top-1" style={{ left: `${(i / totalHours)*100}%` }}>
+                           {minHour + i}:00
+                        </div>
+                     ))}
+                  </div>
+               </div>
+               
+               {/* Rows */}
+               {gridDays.map(day => {
                   const dayName = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][day]
+                  const slots = timetableSlots.filter(s => s.day_of_week === day)
                   const isToday = day === new Date().getDay()
+                  
                   return (
-                    <tr key={day} className={`${isToday ? 'bg-brand-500/10 today-glow font-bold' : 'bg-brand-dark'}`}>
-                      <td className="border-2 border-brand-900 p-3 text-center text-brand-light">{dayName}</td>
-                      {uniqueTimes.map(time => {
-                        const slot = timetableSlots.find(s => s.day_of_week === day && s.start_time.slice(0,5) === time)
-                        const name = slot ? (slot.subject_id ? subjects.find(s=>s.id===slot.subject_id)?.name : labs.find(l=>l.id===slot.lab_id)?.name) : ''
-                        return (
-                          <td key={time} className="border-2 border-brand-900 p-2 text-center text-sm text-brand-light/90">
-                            {name || '-'}
-                          </td>
-                        )
-                      })}
-                    </tr>
+                     <div key={day} className={`flex relative min-h-[60px] border-b-2 last:border-b-0 border-brand-900 ${isToday ? 'bg-brand-500/10 today-glow' : 'bg-brand-dark'}`}>
+                        <div className={`w-16 flex-shrink-0 border-r-2 border-brand-900 flex items-center justify-center font-bold ${isToday ? 'text-brand-500' : 'text-brand-light'} bg-brand-darker`}>
+                           {dayName}
+                        </div>
+                        <div className="flex-1 relative overflow-hidden">
+                           {/* Vertical Grid Lines */}
+                           {Array.from({length: totalHours}).map((_, i) => (
+                              <div key={i} className="absolute top-0 bottom-0 border-l border-brand-900/30 pointer-events-none" style={{ left: `${(i / totalHours)*100}%` }}></div>
+                           ))}
+                           
+                           {/* Slots */}
+                           {slots.map(slot => {
+                              const sTime = parseTime(slot.start_time)
+                              const eTime = parseTime(slot.end_time)
+                              const left = ((sTime - minHour) / totalHours) * 100;
+                              const width = ((eTime - sTime) / totalHours) * 100;
+                              const isLab = !!slot.lab_id;
+                              const name = slot.subject_id ? subjects.find(s=>s.id===slot.subject_id)?.name : labs.find(l=>l.id===slot.lab_id)?.name;
+                              
+                              return (
+                                 <div key={slot.id} className={`absolute top-1 bottom-1 rounded border-2 shadow-neo-sm p-1 px-2 flex flex-col justify-center overflow-hidden whitespace-nowrap text-ellipsis transition-all hover:z-10 hover:scale-105 ${isLab ? 'bg-[#10B981]/20 text-[#10B981] border-[#10B981]' : 'bg-brand-500/20 text-brand-500 border-brand-500'}`} style={{ left: `${left}%`, width: `${width}%` }} title={`${name} (${slot.start_time.slice(0,5)} - ${slot.end_time.slice(0,5)})`}>
+                                    <span className="font-bold text-xs truncate">{name}</span>
+                                    <span className="text-[10px] opacity-70 truncate">{slot.start_time.slice(0,5)} - {slot.end_time.slice(0,5)}</span>
+                                 </div>
+                              )
+                           })}
+                        </div>
+                     </div>
                   )
-                })}
-              </tbody>
-            </table>
+               })}
+            </div>
           </div>
           
           {/* Calendar Box */}
-            <div className="w-full bg-brand-dark rounded-xl border-2 border-brand-900 shadow-neo p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-brand-light">Calendar</h2>
-                <div className="text-brand-light/70 font-semibold">{new Date().toLocaleDateString('en-US', {month:'long', year:'numeric'})}</div>
-              </div>
-              
-              <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center mb-2">
-                {['Su','Mo','Tu','We','Th','Fr','Sa'].map(d => (
-                  <div key={d} className="font-bold text-brand-light/50 text-xs sm:text-sm py-1">{d}</div>
-                ))}
-              </div>
-              <div className="grid grid-cols-7 gap-1 sm:gap-2">
-                {emptyCells.map(i => <div key={`empty-${i}`} className="p-2 sm:p-4" />)}
-                {monthDays.map(d => {
-                  const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
-                  const eventsForDate = calendarEvents.filter(e => e.event_date === dateStr)
-                  const isToday = d === new Date().getDate()
-                  return (
-                    <button 
-                      key={d}
-                      onClick={() => setSelectedDate(dateStr)}
-                      className={`relative p-3 sm:p-6 text-lg border-2 rounded transition-colors active:translate-y-[1px]
-                        ${isToday ? 'border-brand-500 text-brand-500 font-bold bg-brand-500/10 today-glow' : 'border-brand-900 text-brand-light bg-brand-darker hover:bg-brand-900/50'}
-                      `}
-                    >
-                      <span>{d}</span>
-                      {eventsForDate.length > 0 && (
-                        <div className="absolute top-1 right-1 flex gap-0.5">
-                          {eventsForDate.slice(0,3).map((e, idx) => (
-                            <div key={idx} className="w-2 h-2 rounded-full" style={{ backgroundColor: e.color || '#F59E0B' }}></div>
-                          ))}
-                        </div>
-                      )}
-                    </button>
-                  )
-                })}
-              </div>
+          <div className="w-full bg-brand-dark rounded-xl border-2 border-brand-900 shadow-neo p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-brand-light">Calendar</h2>
+              <div className="text-brand-light/70 font-semibold">{new Date().toLocaleDateString('en-US', {month:'long', year:'numeric'})}</div>
             </div>
+            
+            <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center mb-2">
+              {['Su','Mo','Tu','We','Th','Fr','Sa'].map(d => (
+                <div key={d} className="font-bold text-brand-light/50 text-xs sm:text-sm py-1">{d}</div>
+              ))}
+            </div>
+            <div className="grid grid-cols-7 gap-1 sm:gap-2">
+              {emptyCells.map(i => <div key={`empty-${i}`} className="p-2 sm:p-4" />)}
+              {monthDays.map(d => {
+                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
+                const eventsForDate = calendarEvents.filter(e => e.event_date === dateStr)
+                const isToday = d === new Date().getDate()
+                return (
+                  <button 
+                    key={d}
+                    onClick={() => setSelectedDate(dateStr)}
+                    className={`relative p-3 sm:p-6 text-lg border-2 rounded transition-colors active:translate-y-[1px]
+                      ${isToday ? 'border-brand-500 text-brand-500 font-bold bg-brand-500/10 today-glow' : 'border-brand-900 text-brand-light bg-brand-darker hover:bg-brand-900/50'}
+                    `}
+                  >
+                    <span>{d}</span>
+                    {eventsForDate.length > 0 && (
+                      <div className="absolute top-1 right-1 flex gap-0.5">
+                        {eventsForDate.slice(0,3).map((e, idx) => (
+                          <div key={idx} className="w-2 h-2 rounded-full" style={{ backgroundColor: e.color || '#F59E0B' }}></div>
+                        ))}
+                      </div>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -406,7 +473,7 @@ export default function Attendance() {
                     <div className="flex flex-col">
                       <label className="text-xs text-brand-light/70 mb-1 font-bold">Day</label>
                       <select value={newSlotDay} onChange={e=>setNewSlotDay(Number(e.target.value))} className="w-full px-2 py-2 bg-brand-darker border-2 border-brand-900 rounded text-brand-light outline-none shadow-neo-input text-sm">
-                        {[1,2,3,4,5,6].map(d => <option key={d} value={d}>{['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d]}</option>)}
+                        {[1,2,3,4,5].map(d => <option key={d} value={d}>{['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d]}</option>)}
                       </select>
                     </div>
                     <div className="flex flex-col">
@@ -433,7 +500,7 @@ export default function Attendance() {
                   </form>
                   
                   <div className="flex flex-col gap-2">
-                    {timetableSlots.sort((a,b)=>a.day_of_week - b.day_of_week || a.start_time.localeCompare(b.start_time)).map(s => {
+                    {timetableSlots.sort((a,b)=>a.day_of_week - b.day_of_week || parseTime(a.start_time) - parseTime(b.start_time)).map(s => {
                       const name = s.subject_id ? subjects.find(sub=>sub.id===s.subject_id)?.name : labs.find(l=>l.id===s.lab_id)?.name
                       const dayName = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][s.day_of_week]
                       return (

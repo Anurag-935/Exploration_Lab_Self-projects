@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 
 export type Subject = { id: string, name: string }
 export type Lab = { id: string, name: string }
-export type ClassLog = { id: string, subject_id?: string, lab_id?: string, log_date: string, status: 'present'|'absent'|'cancelled' }
+export type ClassLog = { id: string, subject_id?: string, lab_id?: string, timetable_slot_id?: string, log_date: string, status: 'present'|'absent'|'cancelled' }
 export type TimetableSlot = { id: string, day_of_week: number, start_time: string, end_time: string, subject_id?: string, lab_id?: string }
 export type CalendarEvent = { id: string, event_date: string, title: string, notes?: string, tag?: string, color?: string }
 
@@ -76,23 +76,33 @@ export function useAttendance() {
     fetchData()
   }, [])
 
-  const logAttendance = async (subjectId: string | null, labId: string | null, status: string, logDate: string) => {
+  const logAttendance = async (slotId: string, subjectId: string | null, labId: string | null, status: string, logDate: string) => {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
     
-    // Check if it exists
-    let query = supabase.from('class_logs').select('id').eq('log_date', logDate)
-    if (subjectId) query = query.eq('subject_id', subjectId)
-    if (labId) query = query.eq('lab_id', labId)
-    const { data: existing } = await query
+    // Check if it exists by slotId
+    const { data: existing } = await supabase.from('class_logs')
+      .select('id')
+      .eq('log_date', logDate)
+      .eq('timetable_slot_id', slotId)
     
     if (existing && existing.length > 0) {
-      await supabase.from('class_logs').update({ status }).eq('id', existing[0].id)
+      await supabase.from('class_logs').update({ status, subject_id: subjectId, lab_id: labId }).eq('id', existing[0].id)
     } else {
-      const payload: any = { user_id: user.id, log_date: logDate, status }
-      if (subjectId) payload.subject_id = subjectId
-      if (labId) payload.lab_id = labId
-      await supabase.from('class_logs').insert(payload)
+      // Fallback for old logs without slotId
+      let query = supabase.from('class_logs').select('id').eq('log_date', logDate).is('timetable_slot_id', null)
+      if (subjectId) query = query.eq('subject_id', subjectId)
+      if (labId) query = query.eq('lab_id', labId)
+      const { data: oldExisting } = await query
+      
+      if (oldExisting && oldExisting.length > 0) {
+         await supabase.from('class_logs').update({ status, subject_id: subjectId, lab_id: labId, timetable_slot_id: slotId }).eq('id', oldExisting[0].id)
+      } else {
+         const payload: any = { user_id: user.id, log_date: logDate, status, timetable_slot_id: slotId }
+         if (subjectId) payload.subject_id = subjectId
+         if (labId) payload.lab_id = labId
+         await supabase.from('class_logs').insert(payload)
+      }
     }
     fetchData()
   }
