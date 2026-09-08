@@ -373,8 +373,8 @@ export default function Attendance() {
                               const bWidth = ((b.e - b.s) / totalHours) * 100;
                               if (bLeft >= 100 || bLeft + bWidth <= 0) return null;
                               return (
-                                 <div key={b.name} className="absolute top-0 bottom-0 bg-brand-light/[0.04] border-x border-brand-light/10 flex flex-col items-center justify-center pointer-events-none z-0" style={{ left: `${bLeft}%`, width: `${bWidth}%` }}>
-                                    {day === 3 && <span className="font-bold text-brand-light/50 uppercase tracking-[0.15em] text-[9px] sm:text-[11px] whitespace-nowrap -rotate-90">{b.name}</span>}
+                                 <div key={b.name} className="absolute top-0 bottom-0 bg-[#E5E7EB] border-x-2 border-[#D1D5DB] flex flex-col items-center justify-center pointer-events-none z-0" style={{ left: `${bLeft}%`, width: `${bWidth}%` }}>
+                                    {day === 3 && <span className="font-black text-black uppercase tracking-[0.2em] text-[10px] sm:text-xs whitespace-nowrap -rotate-90 drop-shadow-sm">{b.name}</span>}
                                  </div>
                               )
                            })}
