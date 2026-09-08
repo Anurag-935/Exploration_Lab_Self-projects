@@ -134,32 +134,37 @@ export default function Attendance() {
 
   // Timetable CSS Grid Setup
   const minHour = useMemo(() => {
-    let m = 8;
+    let m = 9;
     timetableSlots.forEach(s => {
       const h = parseTime(s.start_time);
-      if (h < m) m = Math.floor(h);
+      if (h < m) m = h;
     });
     return m;
   }, [timetableSlots]);
 
   const maxHour = useMemo(() => {
-    let m = 18;
+    let m = 16.5;
     timetableSlots.forEach(s => {
       const h = parseTime(s.end_time);
-      if (h > m) m = Math.ceil(h);
+      if (h > m) m = h;
     });
     return m;
   }, [timetableSlots]);
 
-  const gridStart = minHour - 0.5;
-  const gridEnd = maxHour + 0.5;
+  const gridStart = minHour;
+  const gridEnd = maxHour;
   const totalHours = gridEnd - gridStart;
 
   const headerHours = useMemo(() => {
     const hrs = [];
-    for (let h = minHour; h <= maxHour; h++) hrs.push(h);
+    for (let h = Math.ceil(minHour); h <= Math.floor(maxHour); h++) hrs.push(h);
     return hrs;
   }, [minHour, maxHour]);
+  
+  const breaks = [
+    { name: 'Short Break', s: 11.0, e: 11.5 },
+    { name: 'Lunch', s: 13.5, e: 14.5 }
+  ];
   const gridDays = [1, 2, 3, 4, 5] // Mon-Fri
 
   if (loading) return <div className="flex items-center justify-center min-h-screen text-brand-light">Loading Attendance...</div>
@@ -335,11 +340,18 @@ export default function Attendance() {
                <div className="flex relative h-6 border-b-2 border-brand-900 bg-brand-darker">
                   <div className="w-12 sm:w-16 flex-shrink-0 border-r-2 border-brand-900"></div>
                   <div className="flex-1 relative overflow-hidden">
-                     {headerHours.map(h => (
-                        <div key={`head-${h}`} className="absolute text-[9px] sm:text-[10px] font-bold text-brand-light/70 -translate-x-1/2 top-1" style={{ left: `${((h - gridStart) / totalHours)*100}%` }}>
-                           {h}:00
-                        </div>
-                     ))}
+                     {headerHours.map(h => {
+                        const isFirst = h === gridStart;
+                        const isLast = h === gridEnd;
+                        let transform = '-translate-x-1/2';
+                        if (isFirst) transform = 'translate-x-0';
+                        if (isLast) transform = '-translate-x-full';
+                        return (
+                           <div key={`head-${h}`} className={`absolute text-[9px] sm:text-[10px] font-bold text-brand-light/70 top-1 ${transform}`} style={{ left: `${((h - gridStart) / totalHours)*100}%` }}>
+                              {h}:00
+                           </div>
+                        )
+                     })}
                   </div>
                </div>
                
@@ -355,13 +367,25 @@ export default function Attendance() {
                            {dayName}
                         </div>
                         <div className="flex-1 relative overflow-hidden">
+                           {/* Break Columns */}
+                           {breaks.map(b => {
+                              const bLeft = ((b.s - gridStart) / totalHours) * 100;
+                              const bWidth = ((b.e - b.s) / totalHours) * 100;
+                              if (bLeft >= 100 || bLeft + bWidth <= 0) return null;
+                              return (
+                                 <div key={b.name} className="absolute top-0 bottom-0 bg-brand-darker/40 border-x border-brand-900/40 flex flex-col items-center justify-center pointer-events-none z-0" style={{ left: `${bLeft}%`, width: `${bWidth}%` }}>
+                                    {day === 3 && <span className="font-bold text-brand-light/20 uppercase tracking-[0.1em] text-[8px] sm:text-[10px] whitespace-nowrap -rotate-90">{b.name}</span>}
+                                 </div>
+                              )
+                           })}
+
                            {/* Vertical Grid Lines (Full Hours) */}
                            {headerHours.map(h => (
-                              <div key={`line-${h}`} className="absolute top-0 bottom-0 border-l-2 border-brand-900/30 pointer-events-none" style={{ left: `${((h - gridStart) / totalHours)*100}%` }}></div>
+                              <div key={`line-${h}`} className="absolute top-0 bottom-0 border-l-2 border-brand-900/30 pointer-events-none z-0" style={{ left: `${((h - gridStart) / totalHours)*100}%` }}></div>
                            ))}
                            {/* Vertical Grid Lines (Half Hours) */}
                            {headerHours.map(h => (
-                              <div key={`line-half-${h}`} className="absolute top-0 bottom-0 border-l border-brand-900/10 border-dashed pointer-events-none" style={{ left: `${((h + 0.5 - gridStart) / totalHours)*100}%` }}></div>
+                              <div key={`line-half-${h}`} className="absolute top-0 bottom-0 border-l border-brand-900/10 border-dashed pointer-events-none z-0" style={{ left: `${((h + 0.5 - gridStart) / totalHours)*100}%` }}></div>
                            ))}
                            
                            {/* Slots */}
@@ -374,9 +398,10 @@ export default function Attendance() {
                               const name = slot.subject_id ? subjects.find(s=>s.id===slot.subject_id)?.name : labs.find(l=>l.id===slot.lab_id)?.name;
                               
                               return (
-                                 <div key={slot.id} className={`absolute top-1 bottom-1 rounded border-2 shadow-neo-sm p-0.5 sm:p-1 flex flex-col justify-center items-center overflow-hidden transition-all hover:z-10 hover:scale-[1.02] ${isLab ? 'bg-[#10B981]/20 text-[#10B981] border-[#10B981]' : 'bg-brand-500/20 text-brand-500 border-brand-500'}`} style={{ left: `${left}%`, width: `${width}%` }} title={`${name} (${slot.start_time.slice(0,5)} - ${slot.end_time.slice(0,5)})`}>
-                                    <span className="font-bold text-[9px] sm:text-[11px] leading-[1.1] text-center break-words whitespace-normal w-full px-0.5 line-clamp-2 sm:line-clamp-3">{name}</span>
-                                    <span className="text-[7px] sm:text-[8px] opacity-75 mt-0.5 font-medium hidden sm:block">{slot.start_time.slice(0,5)}</span>
+                                 <div key={slot.id} className={`absolute top-1 bottom-1 rounded border-2 shadow-neo-sm p-0.5 sm:p-1 flex flex-col justify-center items-center overflow-hidden transition-all hover:z-20 hover:scale-[1.02] z-10 bg-brand-dark ${isLab ? 'border-[#10B981]' : 'border-brand-500'}`} style={{ left: `${left}%`, width: `${width}%` }} title={`${name} (${slot.start_time.slice(0,5)} - ${slot.end_time.slice(0,5)})`}>
+                                    <div className={`absolute inset-0 opacity-20 pointer-events-none ${isLab ? 'bg-[#10B981]' : 'bg-brand-500'}`}></div>
+                                    <span className={`relative font-bold text-[9px] sm:text-[11px] leading-[1.1] text-center break-words whitespace-normal w-full px-0.5 line-clamp-2 sm:line-clamp-3 ${isLab ? 'text-[#10B981]' : 'text-brand-500'}`}>{name}</span>
+                                    {width > 10 && <span className={`relative text-[7px] sm:text-[8px] opacity-75 mt-0.5 font-medium hidden sm:block ${isLab ? 'text-[#10B981]' : 'text-brand-500'}`}>{slot.start_time.slice(0,5)}</span>}
                                  </div>
                               )
                            })}
