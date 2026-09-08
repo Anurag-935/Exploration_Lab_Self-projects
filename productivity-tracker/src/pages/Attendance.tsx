@@ -151,7 +151,15 @@ export default function Attendance() {
     return m;
   }, [timetableSlots]);
 
-  const totalHours = maxHour - minHour;
+  const gridStart = minHour - 0.5;
+  const gridEnd = maxHour + 0.5;
+  const totalHours = gridEnd - gridStart;
+
+  const headerHours = useMemo(() => {
+    const hrs = [];
+    for (let h = minHour; h <= maxHour; h++) hrs.push(h);
+    return hrs;
+  }, [minHour, maxHour]);
   const gridDays = [1, 2, 3, 4, 5] // Mon-Fri
 
   if (loading) return <div className="flex items-center justify-center min-h-screen text-brand-light">Loading Attendance...</div>
@@ -324,12 +332,12 @@ export default function Attendance() {
             
             <div className="flex flex-col border-2 border-brand-900 bg-brand-dark rounded overflow-hidden min-w-[700px]">
                {/* Timeline Header */}
-               <div className="flex relative h-8 border-b-2 border-brand-900 bg-brand-darker">
-                  <div className="w-16 flex-shrink-0 border-r-2 border-brand-900"></div>
-                  <div className="flex-1 relative">
-                     {Array.from({length: totalHours + 1}).map((_, i) => (
-                        <div key={i} className="absolute text-[10px] text-brand-light/70 -translate-x-1/2 top-1" style={{ left: `${(i / totalHours)*100}%` }}>
-                           {minHour + i}:00
+               <div className="flex relative h-6 border-b-2 border-brand-900 bg-brand-darker">
+                  <div className="w-12 sm:w-16 flex-shrink-0 border-r-2 border-brand-900"></div>
+                  <div className="flex-1 relative overflow-hidden">
+                     {headerHours.map(h => (
+                        <div key={`head-${h}`} className="absolute text-[9px] sm:text-[10px] font-bold text-brand-light/70 -translate-x-1/2 top-1" style={{ left: `${((h - gridStart) / totalHours)*100}%` }}>
+                           {h}:00
                         </div>
                      ))}
                   </div>
@@ -342,29 +350,33 @@ export default function Attendance() {
                   const isToday = day === new Date().getDay()
                   
                   return (
-                     <div key={day} className={`flex relative min-h-[60px] border-b-2 last:border-b-0 border-brand-900 ${isToday ? 'bg-brand-500/10 today-glow' : 'bg-brand-dark'}`}>
-                        <div className={`w-16 flex-shrink-0 border-r-2 border-brand-900 flex items-center justify-center font-bold ${isToday ? 'text-brand-500' : 'text-brand-light'} bg-brand-darker`}>
+                     <div key={day} className={`flex relative min-h-[50px] border-b-2 last:border-b-0 border-brand-900 ${isToday ? 'bg-brand-500/10 today-glow' : 'bg-brand-dark'}`}>
+                        <div className={`w-12 sm:w-16 flex-shrink-0 border-r-2 border-brand-900 flex items-center justify-center font-bold text-xs sm:text-sm ${isToday ? 'text-brand-500' : 'text-brand-light'} bg-brand-darker`}>
                            {dayName}
                         </div>
                         <div className="flex-1 relative overflow-hidden">
-                           {/* Vertical Grid Lines */}
-                           {Array.from({length: totalHours}).map((_, i) => (
-                              <div key={i} className="absolute top-0 bottom-0 border-l border-brand-900/30 pointer-events-none" style={{ left: `${(i / totalHours)*100}%` }}></div>
+                           {/* Vertical Grid Lines (Full Hours) */}
+                           {headerHours.map(h => (
+                              <div key={`line-${h}`} className="absolute top-0 bottom-0 border-l-2 border-brand-900/30 pointer-events-none" style={{ left: `${((h - gridStart) / totalHours)*100}%` }}></div>
+                           ))}
+                           {/* Vertical Grid Lines (Half Hours) */}
+                           {headerHours.map(h => (
+                              <div key={`line-half-${h}`} className="absolute top-0 bottom-0 border-l border-brand-900/10 border-dashed pointer-events-none" style={{ left: `${((h + 0.5 - gridStart) / totalHours)*100}%` }}></div>
                            ))}
                            
                            {/* Slots */}
                            {slots.map(slot => {
                               const sTime = parseTime(slot.start_time)
                               const eTime = parseTime(slot.end_time)
-                              const left = ((sTime - minHour) / totalHours) * 100;
+                              const left = ((sTime - gridStart) / totalHours) * 100;
                               const width = ((eTime - sTime) / totalHours) * 100;
                               const isLab = !!slot.lab_id;
                               const name = slot.subject_id ? subjects.find(s=>s.id===slot.subject_id)?.name : labs.find(l=>l.id===slot.lab_id)?.name;
                               
                               return (
-                                 <div key={slot.id} className={`absolute top-1 bottom-1 rounded border-2 shadow-neo-sm p-1 px-2 flex flex-col justify-center overflow-hidden whitespace-nowrap text-ellipsis transition-all hover:z-10 hover:scale-105 ${isLab ? 'bg-[#10B981]/20 text-[#10B981] border-[#10B981]' : 'bg-brand-500/20 text-brand-500 border-brand-500'}`} style={{ left: `${left}%`, width: `${width}%` }} title={`${name} (${slot.start_time.slice(0,5)} - ${slot.end_time.slice(0,5)})`}>
-                                    <span className="font-bold text-xs truncate">{name}</span>
-                                    <span className="text-[10px] opacity-70 truncate">{slot.start_time.slice(0,5)} - {slot.end_time.slice(0,5)}</span>
+                                 <div key={slot.id} className={`absolute top-1 bottom-1 rounded border-2 shadow-neo-sm p-0.5 sm:p-1 flex flex-col justify-center items-center overflow-hidden transition-all hover:z-10 hover:scale-[1.02] ${isLab ? 'bg-[#10B981]/20 text-[#10B981] border-[#10B981]' : 'bg-brand-500/20 text-brand-500 border-brand-500'}`} style={{ left: `${left}%`, width: `${width}%` }} title={`${name} (${slot.start_time.slice(0,5)} - ${slot.end_time.slice(0,5)})`}>
+                                    <span className="font-bold text-[9px] sm:text-[11px] leading-[1.1] text-center break-words whitespace-normal w-full px-0.5 line-clamp-2 sm:line-clamp-3">{name}</span>
+                                    <span className="text-[7px] sm:text-[8px] opacity-75 mt-0.5 font-medium hidden sm:block">{slot.start_time.slice(0,5)}</span>
                                  </div>
                               )
                            })}
