@@ -335,7 +335,7 @@ export default function Attendance() {
               <button onClick={() => setShowSetup(true)} className="flex items-center gap-2 text-sm font-bold bg-brand-darker px-3 py-1.5 rounded border-2 border-brand-900 hover:text-brand-light text-brand-light/70 shadow-neo active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"><Settings size={16}/> Edit Setup</button>
             </div>
             
-            <div className="flex flex-col border-2 border-brand-900 bg-brand-dark rounded overflow-hidden min-w-[700px]">
+            <div className="flex flex-col border-2 border-brand-900 bg-brand-dark rounded overflow-hidden min-w-[900px] lg:min-w-[1000px]">
                {/* Timeline Header */}
                <div className="flex relative h-6 border-b-2 border-brand-900 bg-brand-darker">
                   <div className="w-12 sm:w-16 flex-shrink-0 border-r-2 border-brand-900"></div>
@@ -373,8 +373,8 @@ export default function Attendance() {
                               const bWidth = ((b.e - b.s) / totalHours) * 100;
                               if (bLeft >= 100 || bLeft + bWidth <= 0) return null;
                               return (
-                                 <div key={b.name} className="absolute top-0 bottom-0 bg-brand-darker/40 border-x border-brand-900/40 flex flex-col items-center justify-center pointer-events-none z-0" style={{ left: `${bLeft}%`, width: `${bWidth}%` }}>
-                                    {day === 3 && <span className="font-bold text-brand-light/20 uppercase tracking-[0.1em] text-[8px] sm:text-[10px] whitespace-nowrap -rotate-90">{b.name}</span>}
+                                 <div key={b.name} className="absolute top-0 bottom-0 bg-brand-light/[0.04] border-x border-brand-light/10 flex flex-col items-center justify-center pointer-events-none z-0" style={{ left: `${bLeft}%`, width: `${bWidth}%` }}>
+                                    {day === 3 && <span className="font-bold text-brand-light/50 uppercase tracking-[0.15em] text-[9px] sm:text-[11px] whitespace-nowrap -rotate-90">{b.name}</span>}
                                  </div>
                               )
                            })}
@@ -399,9 +399,9 @@ export default function Attendance() {
                               
                               return (
                                  <div key={slot.id} className={`absolute top-1 bottom-1 rounded border-2 shadow-neo-sm p-0.5 sm:p-1 flex flex-col justify-center items-center overflow-hidden transition-all hover:z-20 hover:scale-[1.02] z-10 bg-brand-dark ${isLab ? 'border-[#10B981]' : 'border-brand-500'}`} style={{ left: `${left}%`, width: `${width}%` }} title={`${name} (${slot.start_time.slice(0,5)} - ${slot.end_time.slice(0,5)})`}>
-                                    <div className={`absolute inset-0 opacity-20 pointer-events-none ${isLab ? 'bg-[#10B981]' : 'bg-brand-500'}`}></div>
-                                    <span className={`relative font-bold text-[9px] sm:text-[11px] leading-[1.1] text-center break-words whitespace-normal w-full px-0.5 line-clamp-2 sm:line-clamp-3 ${isLab ? 'text-[#10B981]' : 'text-brand-500'}`}>{name}</span>
-                                    {width > 10 && <span className={`relative text-[7px] sm:text-[8px] opacity-75 mt-0.5 font-medium hidden sm:block ${isLab ? 'text-[#10B981]' : 'text-brand-500'}`}>{slot.start_time.slice(0,5)}</span>}
+                                    <div className={`absolute inset-0 opacity-30 pointer-events-none ${isLab ? 'bg-[#10B981]' : 'bg-brand-500'}`}></div>
+                                    <span className={`relative font-bold text-[10px] sm:text-xs leading-[1.1] text-center break-words whitespace-normal w-full px-0.5 line-clamp-2 sm:line-clamp-3 text-brand-light`}>{name}</span>
+                                    {width > 10 && <span className={`relative text-[7px] sm:text-[8px] opacity-75 mt-0.5 font-medium hidden sm:block text-brand-light`}>{slot.start_time.slice(0,5)}</span>}
                                  </div>
                               )
                            })}
