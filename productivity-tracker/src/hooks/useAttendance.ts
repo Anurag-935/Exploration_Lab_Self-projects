@@ -87,7 +87,8 @@ export function useAttendance() {
       .eq('timetable_slot_id', slotId)
     
     if (existing && existing.length > 0) {
-      await supabase.from('class_logs').update({ status, subject_id: subjectId, lab_id: labId }).eq('id', existing[0].id)
+      const { error } = await supabase.from('class_logs').update({ status, subject_id: subjectId, lab_id: labId }).eq('id', existing[0].id)
+      if (error) alert("Error updating attendance: " + error.message)
     } else {
       // Fallback for old logs without slotId
       let query = supabase.from('class_logs').select('id').eq('log_date', logDate).is('timetable_slot_id', null)
@@ -95,14 +96,21 @@ export function useAttendance() {
       if (labId) query = query.eq('lab_id', labId)
       const { data: oldExisting } = await query
       
-      if (oldExisting && oldExisting.length > 0) {
-         await supabase.from('class_logs').update({ status, subject_id: subjectId, lab_id: labId, timetable_slot_id: slotId }).eq('id', oldExisting[0].id)
-      } else {
-         const payload: any = { user_id: user.id, log_date: logDate, status, timetable_slot_id: slotId }
-         if (subjectId) payload.subject_id = subjectId
-         if (labId) payload.lab_id = labId
-         await supabase.from('class_logs').insert(payload)
-      }
+      try {
+          if (oldExisting && oldExisting.length > 0) {
+             const { error } = await supabase.from('class_logs').update({ status, subject_id: subjectId, lab_id: labId, timetable_slot_id: slotId }).eq('id', oldExisting[0].id)
+             if (error) throw error
+          } else {
+             const payload: any = { user_id: user.id, log_date: logDate, status, timetable_slot_id: slotId }
+             if (subjectId) payload.subject_id = subjectId
+             if (labId) payload.lab_id = labId
+             const { error } = await supabase.from('class_logs').insert(payload)
+             if (error) throw error
+          }
+       } catch (err: any) {
+          console.error("Attendance Error:", err)
+          alert("Failed to log attendance. Please run the SQL command in Supabase: ALTER TABLE class_logs ADD COLUMN timetable_slot_id UUID REFERENCES timetable_slots(id) ON DELETE CASCADE;\n\nError: " + (err.message || JSON.stringify(err)))
+       }
     }
     fetchData()
   }

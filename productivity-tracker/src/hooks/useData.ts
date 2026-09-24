@@ -45,8 +45,9 @@ export const runDailyRollover = async (userId: string) => {
     await supabase.from("backlog_tasks").insert(backlogInserts)
   }
   
-  for (const t of shortTasks) {
-    await supabase.from("tasks").update({ carried_over_count: -1 }).eq("id", t.id)
+  if (shortTasks.length > 0) {
+    const ids = shortTasks.map(t => t.id)
+    await supabase.from("tasks").update({ carried_over_count: -1 }).in("id", ids)
   }
 
   // --- RECURRING TASKS (Habits & Long Plans) ---
@@ -80,8 +81,9 @@ export const runDailyRollover = async (userId: string) => {
     }
   }
 
-  for (const t of recurringTasks) {
-    await supabase.from("tasks").update({ carried_over_count: -1 }).eq("id", t.id)
+  if (recurringTasks.length > 0) {
+    const ids = recurringTasks.map(t => t.id)
+    await supabase.from("tasks").update({ carried_over_count: -1 }).in("id", ids)
   }
 }
 
