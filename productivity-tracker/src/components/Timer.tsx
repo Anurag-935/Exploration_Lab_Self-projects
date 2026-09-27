@@ -81,15 +81,16 @@ export default function Timer({ activeTasks, onStop }: Props) {
  setSessionStart(null)
  
  // Write to time_logs
- const { data: { user } } = await supabase.auth.getUser()
- if (user) {
-   await supabase.from("time_logs").insert({
-   user_id: user.id,
+ const { error } = await supabase.from("time_logs").insert({
    task_id: selectedTaskId,
    start_time: startTime,
    end_time: new Date().toISOString(),
    duration_seconds: finalElapsed
-   })
+ })
+ 
+ if (error) {
+   alert("Failed to save timer: " + error.message)
+   return
  }
 
  setElapsed(0)
